@@ -2,7 +2,7 @@ import numpy as np
 
 
 class EarlyStopping:
-    def __init__(self, patience=10, min_delta_loss=0.0, min_delta_accuracy=0.0, restore_best_weights=True):
+    def __init__(self, patience=10, min_delta_loss=0.0, min_delta_accuracy=0.0):
         """
         Initialize the early stopping criteria.
 
@@ -15,7 +15,6 @@ class EarlyStopping:
         self.patience = patience
         self.min_delta_loss = min_delta_loss
         self.min_delta_accuracy = min_delta_accuracy
-        self.restore_best_weights = restore_best_weights
         self.best_weights = None
         self.best_epoch = 0
         self.best_loss = np.inf  # Track the best validation loss
@@ -44,9 +43,6 @@ class EarlyStopping:
                 self.best_accuracy = current_accuracy
             self.best_epoch = epoch
             self.wait = 0
-            # if self.restore_best_weights:
-            #     # Save the best weights
-            #     self.best_weights = [layer.weights.copy() for layer in model.layers]
         else:
             # No improvement
             self.wait += 1

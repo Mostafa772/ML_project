@@ -1,5 +1,16 @@
 import numpy as np
 
+
+class Activation_Linear:
+    """Linear activation for regression output"""
+    def forward(self, inputs):
+        self.inputs = inputs
+        self.output = inputs.copy()
+        
+    def backward(self, dvalues):
+        self.dinputs = dvalues.copy()
+        
+        
 class Activation_ReLU:
     def forward(self, inputs):
         self.inputs = inputs

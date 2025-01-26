@@ -17,10 +17,12 @@ def create_batches(X, y, batch_size):
     for start_idx in range(0, n_samples, batch_size):
         end_idx = min(start_idx + batch_size, n_samples)
         batch_indices = indices[start_idx:end_idx]
-        
-        yield X[batch_indices], y[batch_indices] # ****changed something****
-
-
+        # if y.shape[1] == 1: # ****changed something****
+        #     yield X[batch_indices], y[batch_indices]
+        # else:
+        #     # yield X[batch_indices], y.iloc[batch_indices] # ****changed something****
+        #     yield X[batch_indices], y[batch_indices]
+        yield X[batch_indices], y[batch_indices]
  
 
 
