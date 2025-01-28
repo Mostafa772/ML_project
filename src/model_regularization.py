@@ -2,7 +2,7 @@ import numpy as np
 
 
 class EarlyStopping:
-    def __init__(self, patience=10, min_delta_loss=0.0, min_delta_accuracy=0.0):
+    def __init__(self, patience=20, min_delta_loss=0.0, min_delta_accuracy=0.0):
         """
         Initialize the early stopping criteria.
 
@@ -36,6 +36,7 @@ class EarlyStopping:
         accuracy_improved = current_accuracy > self.best_accuracy + self.min_delta_accuracy
 
         if loss_improved or accuracy_improved:
+            print("loss_improved: ", loss_improved, "accuracy_improved: ", accuracy_improved)
             # Improvement detected
             if loss_improved:
                 self.best_loss = current_loss
