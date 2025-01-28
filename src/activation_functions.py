@@ -37,13 +37,13 @@ class Activation_Leaky_ReLU:
 class Activation_Sigmoid:
     def forward(self, inputs):
         self.inputs = inputs
-        self.output = 1/(1 + np.exp(-inputs))
-
-    def backward(self, dvalues):  # f′(x) = σ(x)⋅(1−σ(x))
-        self.dinputs = dvalues.copy()
-        self.dinputs = self.output * (1 - self.output)
-        self.dinputs *= dvalues
-
+        self.output = 1 / (1 + np.exp(-inputs))
+    
+    def backward(self, dvalues):
+        # Compute derivative of sigmoid
+        sigmoid_derivative = self.output * (1 - self.output)
+        # Multiply by incoming gradients (chain rule)
+        self.dinputs = dvalues * sigmoid_derivative
 
 class Activation_Tanh:
     def forward(self, inputs):
