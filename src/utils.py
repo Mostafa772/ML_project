@@ -23,7 +23,6 @@ def create_batches(X, y, batch_size):
         #     # yield X[batch_indices], y.iloc[batch_indices] # ****changed something****
         #     yield X[batch_indices], y[batch_indices]
         yield X[batch_indices], y[batch_indices]
- 
 
 
 def plot_accuracies(train_vals, val_vals, label1="train_accuracies", label2="val_accuracies", title="Accuracy Over Epochs"):
@@ -64,3 +63,13 @@ def plot_losses(train_vals, val_vals, label1="train_losses", label2="val_losses"
     plt.legend()
     plt.grid(True)
     plt.show()
+
+def to_ndarray(array: pd.DataFrame | pd.Series | np.ndarray) -> np.ndarray:
+    if isinstance(array, np.ndarray):
+        return array
+
+    if isinstance(array, pd.DataFrame):
+        return array.values
+    
+    if isinstance(array, pd.Series):
+        return array.array.to_numpy()
