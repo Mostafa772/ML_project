@@ -1,8 +1,8 @@
 import numpy as np
-
+from model import NN
 
 class EarlyStopping:
-    def __init__(self, patience=10, min_delta_loss=0.0, min_delta_accuracy=0.0):
+    def __init__(self, patience:int = 10, min_delta_loss :float = 1e-14, min_delta_accuracy :float = 1e-14):
         """
         Initialize the early stopping criteria.
 
@@ -22,7 +22,7 @@ class EarlyStopping:
         self.wait = 0  # Counter for epochs without improvement
         self.stop_training = False
 
-    def on_epoch_end(self, current_loss, current_accuracy, model, epoch):
+    def on_epoch_end(self, current_loss: float, current_accuracy: float, model: NN, epoch: int):
         """
         Call this at the end of each epoch to check if training should stop.
 
@@ -35,21 +35,24 @@ class EarlyStopping:
         loss_improved = current_loss < self.best_loss - self.min_delta_loss
         accuracy_improved = current_accuracy > self.best_accuracy + self.min_delta_accuracy
 
+        if loss_improved:
+            self.best_loss = current_loss
+        if accuracy_improved:
+            self.best_accuracy = current_accuracy
+
         if loss_improved or accuracy_improved:
             # Improvement detected
-            if loss_improved:
-                self.best_loss = current_loss
-            if accuracy_improved:
-                self.best_accuracy = current_accuracy
+            self.best_weights = [layer.weights for layer in model.layers]
             self.best_epoch = epoch
             self.wait = 0
         else:
             # No improvement
             self.wait += 1
-            if self.wait >= self.patience:
-                self.stop_training = True
+            
+        if self.wait >= self.patience:
+            self.stop_training = True
 
-    def restore_weights(self, model):
+    def restore_weights(self, model: NN):
         """
         Restore the model's weights to the best epoch.
 
@@ -59,41 +62,3 @@ class EarlyStopping:
         if self.best_weights is not None:
             for layer, weights in zip(model.layers, self.best_weights):
                 layer.weights = weights
-                
-                
-                
-class Dropout:
-    def __init__(self, rate):
-        """
-        Initialize a dropout layer.
-        
-        Parameters:
-        - rate: Dropout rate (fraction of inputs to drop)
-        """
-        self.rate = 1 - rate  # Store keep rate instead of drop rate
-        self.mask = None
-        
-    def forward(self, inputs, training=True):
-        """
-        Perform the forward pass with dropout.
-        
-        Parameters:
-        - inputs: Input data
-        - training: Boolean indicating training mode
-        """
-        self.inputs = inputs
-        
-        if training:
-            self.mask = np.random.binomial(1, self.rate, size=inputs.shape) / self.rate
-            self.output = inputs * self.mask
-        else:
-            self.output = inputs
-            
-    def backward(self, dvalues):
-        """
-        Perform the backward pass through dropout.
-        
-        Parameters:
-        - dvalues: Gradient of the loss with respect to the output
-        """
-        self.dinputs = dvalues * self.mask
