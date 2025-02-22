@@ -1,6 +1,6 @@
 import numpy as np
 
-from layer import Layer
+from src.layer import Layer
 
 class Optimizer_Base:
     """Base class for all optimizers"""
@@ -12,7 +12,7 @@ class Optimizer_Base:
 
     def pre_update_params(self):
         """Update learning rate based on decay schedule"""
-        if self.decay:
+        if self.decay > 0:
             self.current_learning_rate = self.learning_rate * (1. / (1. + self.decay * self.iterations))
 
     def post_update_params(self):

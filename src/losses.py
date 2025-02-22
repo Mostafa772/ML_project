@@ -5,7 +5,14 @@ from src.activation_functions import Activation_Softmax
 class Loss(ABC):
     @abstractmethod
     def forward(self, y_pred, y_true):
-        raise NotImplemented    
+        raise NotImplemented
+
+    @abstractmethod
+    def backward(self, dvalues, y_true):
+        raise NotImplemented
+
+    def __call__(self, y_pred, y_true):
+        return self.forward(y_pred, y_true)
 
 class Loss_CategoricalCrossentropy(Loss):
 
@@ -14,36 +21,12 @@ class Loss_CategoricalCrossentropy(Loss):
         data_loss = np.mean(sample_losses)
         return data_loss
 
-    def forward(self, y_pred, y_true):
-        samples = len(y_pred)
-        y_pred_clipped = np.clip(y_pred, 1e-7, 1-1e-7)
-        correct_confidence = None
-
-        if len(y_true.shape) == 1:
-            correct_confidence = y_pred_clipped[range(samples), y_true]
-
-        elif len(y_true.shape) == 2:
-            correct_confidence = np.sum(y_pred_clipped * y_true, axis=1)
-
-        negative_log_likelihoods = np.log(correct_confidence)
-        return negative_log_likelihoods
+    def forward(self, y_pred: np.ndarray, y_true: np.ndarray):
+        y_pred = np.clip(y_pred, 1e-12, 1 - 1e-12)  # Avoid log(0)
+        return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
 
     def backward(self, dvalues, y_true):
-
-        # Number of samples
-        samples = len(dvalues)
-        # Number of labels in every sample
-        # We'll use the first sample to count them
-        labels = len(dvalues[0])
-
-        # If labels are sparse, turn them into one-hot vector
-        if len(y_true.shape) == 1:
-            y_true = np.eye(labels)[y_true]
-
-        # Calculate gradient
-        self.dinputs = -y_true / dvalues
-        # Normalize gradient
-        self.dinputs = self.dinputs / samples
+        return dvalues - y_true
 
 
 class Activation_Softmax_Loss_CategoricalCrossentropy():
@@ -88,3 +71,4 @@ class MSE(Loss):
         samples = len(dvalues)
         self.dinputs = 2 * (dvalues - y_true) / samples
         return self.dinputs
+        
