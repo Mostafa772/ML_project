@@ -2,7 +2,7 @@ import numpy as np
 from model import NN
 
 class EarlyStopping:
-    def __init__(self, patience:int = 10, min_delta_loss :float = 1e-14, min_delta_accuracy :float = 1e-14):
+    def __init__(self, patience, min_delta_loss :float = 1e-14, min_delta_accuracy :float = 1e-14):
         """
         Initialize the early stopping criteria.
 
@@ -22,9 +22,10 @@ class EarlyStopping:
         self.wait = 0  # Counter for epochs without improvement
         self.stop_training = False
 
-    def on_epoch_end(self, current_loss: float, current_accuracy: float, model: NN, epoch: int):
+    def on_epoch_end(self, current_loss: float, current_accuracy: float, model: NN) -> bool:
         """
-        Call this at the end of each epoch to check if training should stop.
+        Call this at the end of each epoch.
+        Returns a flag indicating wether or not training should stop.
 
         Parameters:
         - current_loss: The validation loss from the current epoch.
@@ -43,7 +44,7 @@ class EarlyStopping:
         if loss_improved or accuracy_improved:
             # Improvement detected
             self.best_weights = [layer.weights for layer in model.layers]
-            self.best_epoch = epoch
+            self.best_epoch += self.wait
             self.wait = 0
         else:
             # No improvement
@@ -52,6 +53,8 @@ class EarlyStopping:
         if self.wait >= self.patience:
             self.stop_training = True
 
+        return self.stop_training
+
     def restore_weights(self, model: NN):
         """
         Restore the model's weights to the best epoch.
@@ -59,6 +62,7 @@ class EarlyStopping:
         Parameters:
         - model: The model to restore the weights to.
         """
-        if self.best_weights is not None:
-            for layer, weights in zip(model.layers, self.best_weights):
-                layer.weights = weights
+        assert self.best_weights is not None, f"Called restore_weights of Early Stopping when no weights were saved. \nDid you forget to call on_epoch_end?"
+        
+        for layer, weights in zip(model.layers, self.best_weights):
+            layer.weights = weights
