@@ -68,22 +68,17 @@ class Trainer:
         batch_accuracies = []
 
         for _ in range(epochs):
-            losses, accuracies = self.train_epoch(batch_size)
-
-            batch_losses.append(losses)
-            batch_accuracies.append(accuracies)
+            loss, accuracy = self.train_epoch(batch_size)
 
             # Epoch metrics
-            epoch_loss = np.mean(batch_losses)
-            epoch_acc = np.mean(batch_accuracies)
-            train_losses.append(epoch_loss)
-            train_accuracies.append(epoch_acc)
+            train_losses.append(loss)
+            train_accuracies.append(accuracy)
 
             val_loss, val_accuracy = self.validate()
             val_losses.append(val_loss)
             val_accuracies.append(val_accuracy)
 
-            self.early_stopping.on_epoch_end(losses, accuracies, self.model)
+            self.early_stopping.on_epoch_end(val_loss, val_accuracy, self.model)
             if self.early_stopping.stop_training:
                 break
             
@@ -102,7 +97,7 @@ class Trainer:
         batch_accuracies = []
 
         for X_batch, y_batch in create_batches(self.training_set.samples, self.training_set.targets, batch_size):
-            print(f"batch size {X_batch.shape}")
+            # print(f"batch size {X_batch.shape}") Later to fix
             # Forward pass
             output = self.model.forward(X_batch, training=True)
             
@@ -126,8 +121,7 @@ class Trainer:
                 dvalues = layer.backward(dvalues)
                 self.optimizer.update_params(layer)
                 
-            self.optimizer.post_update_params()
-
+            self.optimizer.post_update_params()            
             
             batch_losses.append(loss)
             batch_accuracies.append(accuracy)

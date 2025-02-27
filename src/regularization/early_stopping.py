@@ -19,7 +19,7 @@ class EarlyStopping:
         self.best_epoch = 0
         self.best_loss = np.inf  # Track the best validation loss
         self.best_accuracy = -np.inf  # Track the best validation accuracy
-        self.wait = 0  # Counter for epochs without improvement
+        self.wait = -1  # Counter for epochs without improvement
         self.stop_training = False
 
     def on_epoch_end(self, current_loss: float, current_accuracy: float, model: NN) -> bool:
@@ -33,8 +33,8 @@ class EarlyStopping:
         - model: The model being trained (to save the best weights).
         """
         # Check if either loss or accuracy has improved
-        loss_improved = current_loss < self.best_loss - self.min_delta_loss
-        accuracy_improved = current_accuracy > self.best_accuracy + self.min_delta_accuracy
+        loss_improved = current_loss < self.best_loss + self.min_delta_loss
+        accuracy_improved = current_accuracy > self.best_accuracy - self.min_delta_accuracy
 
         if loss_improved:
             self.best_loss = current_loss
@@ -44,8 +44,9 @@ class EarlyStopping:
         if loss_improved or accuracy_improved:
             # Improvement detected
             self.best_weights = [layer.weights for layer in model.layers]
-            self.best_epoch += self.wait
+            self.best_epoch += self.wait + 1
             self.wait = 0
+            print(f"New best found at epoch {self.best_epoch}, accuracy: {self.best_accuracy}")
         else:
             # No improvement
             self.wait += 1
