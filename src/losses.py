@@ -1,8 +1,12 @@
 from abc import ABC, abstractmethod
 import numpy as np
 from src.activation_functions import Activation_Softmax
+from src.regularization.regularization import Regularization
 
 class Loss(ABC):
+    def __init__(self, regularizations: list[Regularization]):
+        self.regularizations = regularizations
+
     @abstractmethod
     def forward(self, y_pred, y_true):
         raise NotImplemented
@@ -11,8 +15,14 @@ class Loss(ABC):
     def backward(self, dvalues, y_true) -> np.ndarray:
         raise NotImplemented
 
-    def __call__(self, y_pred, y_true):
-        return self.forward(y_pred, y_true)
+    def __call__(self, y_pred, y_true, weights: np.ndarray | None = None) -> np.ndarray:
+        """
+        __call__ implements the loss calculation but adds the regularizations mechanisms
+        """
+        loss = self.forward(y_pred, y_true)
+        for regularization in self.regularizations:
+            loss += regularization(weights)
+        return loss
 
 class Loss_CategoricalCrossentropy(Loss):
 

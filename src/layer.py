@@ -48,13 +48,13 @@ class Layer_Dense(Layer):
         self.dbiases = np.sum(dvalues, axis=0, keepdims=True)
         self.dweights = np.dot(self.inputs.T, dvalues)
         
-        # L1 regularization on weights
-        if self.l1 > 0:
-            self.dweights += self.l1 * np.sign(self.weights)
+        # # L1 regularization on weights
+        # if self.l1 > 0:
+        #     self.dweights += self.l1 * np.sum(np.linalg.norm(self.weights, ord=1))
         
-        # L2 regularization on weights
-        if self.l2 > 0:
-            self.dweights += 2 * self.l2 * self.weights
+        # # L2 regularization on weights
+        # if self.l2 > 0:
+        #     self.dweights += 2 * self.l2 * np.sum(np.square(self.weights))
         
         # Gradient on inputs
         self.dinputs = np.dot(dvalues.T, self.inputs)
