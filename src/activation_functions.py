@@ -16,12 +16,9 @@ class Activation(ABC):
 class Activation_Linear(Activation):
     """Linear activation for regression output"""
     def forward(self, inputs):
-        self.inputs = inputs
-        self.output = inputs.copy()
         return inputs
 
     def backward(self, dvalues):
-        self.dinputs = dvalues.copy()
         return 1
 
 class Activation_ReLU(Activation):
@@ -59,7 +56,8 @@ class Activation_Sigmoid(Activation):
         return self.output
 
     def backward(self, dvalues):  # f′(x) = σ(x)⋅(1−σ(x))
-        return self.output * (1 - self.output) * dvalues
+        fx = self.forward(dvalues)
+        return fx * (1 - fx)
 
 
 class Activation_Tanh(Activation):

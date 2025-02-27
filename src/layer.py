@@ -1,9 +1,7 @@
 from abc import abstractmethod, ABC
 import numpy as np
-from numpy.typing import ArrayLike
-import pandas as pd
 
-from activation_functions import Activation, Activation_Linear
+from activation_functions import Activation, Activation_Sigmoid
 
 class Layer(ABC):
     def __init__(self,n_inputs: int, n_neurons: int, activation: Activation) -> None:
@@ -30,49 +28,35 @@ class Layer(ABC):
         raise NotImplemented
 
 class Layer_Dense(Layer):
-    def __init__(self, n_inputs: int, n_neurons: int, activation: Activation = Activation_Linear(), l1: float = 0.0, l2: float = 0.0):
+    def __init__(self, n_inputs: int, n_neurons: int, activation: Activation = Activation_Sigmoid(), l1: float = 0, l2: float = 0):
         super().__init__(n_inputs, n_neurons, activation)
         self.l1 = l1
         self.l2 = l2
         
     def forward(self, inputs: np.ndarray) -> np.ndarray:
         self.inputs = inputs
-        net = np.dot(inputs, self.weights) + self.biases
-        self.output = self.activation(net)
+        self.net = np.dot(inputs, self.weights) + self.biases
+        self.output = self.activation(self.net)
         return self.output
 
     def backward(self, dvalues: np.ndarray) -> np.ndarray:
-        # Gradients on parameters
-        self.dweights = np.dot(self.inputs.T, dvalues)
+        # Compute gradient of the activation function
+        derivative = self.activation.backward(self.net)
+        dvalues *= derivative
+        
+        # Gradients on weights and biases
         self.dbiases = np.sum(dvalues, axis=0, keepdims=True)
-
-        # L1 regularization
+        self.dweights = np.dot(self.inputs.T, dvalues)
+        
+        # L1 regularization on weights
         if self.l1 > 0:
-            dl1 = np.ones_like(self.weights)
-            dl1[self.weights < 0] = -1
-            self.dweights += self.l1 * dl1
-
-        # L2 regularization
+            self.dweights += self.l1 * np.sign(self.weights)
+        
+        # L2 regularization on weights
         if self.l2 > 0:
             self.dweights += 2 * self.l2 * self.weights
-
-        # Gradient on values
-        self.dinputs = np.dot(dvalues, self.weights.T)
+        
+        # Gradient on inputs
+        self.dinputs = np.dot(dvalues.T, self.inputs)
+        
         return self.dinputs
-
-    def get_regularization_loss(self):
-        """
-        Calculate regularization loss for the layer.
-
-        Returns:
-        - regularization_loss: Combined L1 and L2 regularization loss
-        """
-        regularization_loss = 0
-
-        if self.l1 > 0:
-            regularization_loss += self.l1 * np.sum(np.abs(self.weights))
-
-        if self.l2 > 0:
-            regularization_loss += self.l2 * np.sum(self.weights * self.weights)
-
-        return regularization_loss

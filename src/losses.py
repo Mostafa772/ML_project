@@ -8,7 +8,7 @@ class Loss(ABC):
         raise NotImplemented
 
     @abstractmethod
-    def backward(self, dvalues, y_true):
+    def backward(self, dvalues, y_true) -> np.ndarray:
         raise NotImplemented
 
     def __call__(self, y_pred, y_true):
@@ -25,7 +25,7 @@ class Loss_CategoricalCrossentropy(Loss):
         y_pred = np.clip(y_pred, 1e-12, 1 - 1e-12)  # Avoid log(0)
         return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
 
-    def backward(self, dvalues, y_true):
+    def backward(self, dvalues, y_true) -> np.ndarray:
         return dvalues - y_true
 
 
@@ -67,7 +67,7 @@ class MSE(Loss):
         self.output = np.mean((y_pred - y_true)**2)
         return self.output
     
-    def backward(self, dvalues, y_true):
+    def backward(self, dvalues, y_true) -> np.ndarray:
         samples = len(dvalues)
         self.dinputs = 2 * (dvalues - y_true) / samples
         return self.dinputs
