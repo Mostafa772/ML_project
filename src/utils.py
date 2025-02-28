@@ -21,7 +21,7 @@ def create_batches(X, y, batch_size: int):
         yield X[batch_indices], y[batch_indices]
 
 
-def plot_accuracies(train_vals, val_vals, test_accuracy,label1="train_accuracies", label2="val_accuracies", label3="test_accuracy", title="Accuracy Over Epochs"):
+def plot_accuracies(train_vals, val_vals, test_accuracy,label1="train_accuracies", label2="val_accuracies", label3="Test accuracy", title="Accuracy Over Epochs"):
     """
     Plot training and validation accuracies over epochs.
 
@@ -42,7 +42,7 @@ def plot_accuracies(train_vals, val_vals, test_accuracy,label1="train_accuracies
     plt.show()
 
 
-def plot_losses(train_vals, val_vals, label1="train_losses", label2="val_losses", title="Loss Over Epochs"):
+def plot_losses(train_vals, val_vals, test_loss, label1="train_losses", label2="val_losses", label3 = "Test loss", title="Loss Over Epochs"):
     """
     Plot training and validation losses over epochs.
 
@@ -54,6 +54,7 @@ def plot_losses(train_vals, val_vals, label1="train_losses", label2="val_losses"
     plt.figure(figsize=(8, 6))
     plt.plot(train_vals, label=label1, color="blue", linewidth=2)
     plt.plot(val_vals, label=label2, linestyle="--", color="orange", linewidth=2)
+    plt.axhline(y=test_loss, color="red", label=label3, linewidth=0.5)
     plt.title(title)
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
