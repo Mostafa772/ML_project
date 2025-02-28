@@ -47,7 +47,7 @@ class Trainer:
         
         test_accuracy, test_loss = self.test()
         
-        plot_losses(metrics["train_losses"], metrics["val_losses"], label1="Training Loss", label2="Validation Loss", title="Loss Over Epochs")
+        plot_losses(metrics["train_losses"], metrics["val_losses"], test_loss, label1="Training Loss", label2="Validation Loss", title="Loss Over Epochs")
         plot_accuracies(metrics["train_accuracies"], metrics["val_accuracies"], test_accuracy, label1="Training Accuracies", label2="Validation Accuracies", title="Accuracy Over Epochs")
 
         return {
@@ -64,8 +64,6 @@ class Trainer:
         train_accuracies = []
         val_losses = []
         val_accuracies = []
-        batch_losses = []
-        batch_accuracies = []
 
         for _ in range(epochs):
             loss, accuracy = self.train_epoch(batch_size)
@@ -132,7 +130,7 @@ class Trainer:
         output = self.model.forward(self.test_set.samples, training=False)
         
         predictions = np.round(output.squeeze())
-        loss = self.loss(predictions, self.test_set.targets)
+        loss = self.loss.forward(predictions, self.test_set.targets)
         
         # Calculate accuracy for the test set
         y_true = self.test_set.targets
@@ -150,7 +148,7 @@ class Trainer:
         output = self.model.forward(samples, training=False)
         val_predictions = np.round(output.squeeze())
         
-        val_loss = self.loss(output, targets)
+        val_loss = self.loss.forward(output, targets)
         val_accuracy = np.mean(val_predictions == self.validation_set.targets.squeeze())
         return val_loss, val_accuracy
 
