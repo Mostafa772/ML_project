@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Regularization:
     def __call__(self, weights: np.ndarray | None) -> np.ndarray:
         raise NotImplemented

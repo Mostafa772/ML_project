@@ -2,6 +2,7 @@ import numpy as np
 
 from src.layer import Layer
 
+
 class Optimizer_Base:
     """Base class for all optimizers"""
     def __init__(self, learning_rate=1.0, decay=0.0):

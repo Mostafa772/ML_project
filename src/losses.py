@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
+
 import numpy as np
+
 from src.activation_functions import Activation_Softmax
 from src.regularization.regularization import Regularization
+
 
 class Loss(ABC):
     def __init__(self, regularizations: list[Regularization]):

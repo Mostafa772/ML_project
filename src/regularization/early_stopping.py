@@ -1,5 +1,7 @@
 import numpy as np
+
 from model import NN
+
 
 class EarlyStopping:
     def __init__(self, patience, min_delta_loss :float = 1e-14, min_delta_accuracy :float = 1e-14):

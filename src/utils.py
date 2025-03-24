@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+
 def create_batches(X, y, batch_size: int):
     """Create mini-batches from the data"""
     # Convert to numpy array if input is pandas DataFrame/Series
@@ -21,7 +22,7 @@ def create_batches(X, y, batch_size: int):
         yield X[batch_indices], y[batch_indices]
 
 
-def plot_accuracies(train_vals, val_vals, test_accuracy,label1="train_accuracies", label2="val_accuracies", label3="Test accuracy", title="Accuracy Over Epochs"):
+def plot_accuracies(train_vals: np.ndarray, val_vals: np.ndarray, test_accuracy: float, label1="Training accuracies", label2="Validation accuracies", label3="Test accuracy", title="Accuracy Over Epochs"):
     """
     Plot training and validation accuracies over epochs.
 
@@ -42,7 +43,7 @@ def plot_accuracies(train_vals, val_vals, test_accuracy,label1="train_accuracies
     plt.show()
 
 
-def plot_losses(train_vals, val_vals, test_loss, label1="train_losses", label2="val_losses", label3 = "Test loss", title="Loss Over Epochs"):
+def plot_losses(train_vals: np.ndarray, val_vals: np.ndarray, test_loss: float, label1="Training loss", label2="Validation loss", label3 = "Test loss", title="Loss Over Epochs"):
     """
     Plot training and validation losses over epochs.
 

@@ -1,7 +1,9 @@
-from abc import abstractmethod, ABC
+from abc import ABC, abstractmethod
+
 import numpy as np
 
 from activation_functions import Activation, Activation_Sigmoid
+
 
 class Layer(ABC):
     def __init__(self,n_inputs: int, n_neurons: int, activation: Activation) -> None:
