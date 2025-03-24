@@ -1,14 +1,14 @@
 import numpy as np
 import pandas as pd
-from losses import *
-from optimizers import *
-from layer import *
-from regularization import early_stopping
-from utils import *
-from activation_functions import *
-from model import *
-from regularization.early_stopping import EarlyStopping
 
+from activation_functions import *
+from layer import *
+from losses import *
+from model import *
+from optimizers import *
+from regularization import early_stopping
+from regularization.early_stopping import EarlyStopping
+from utils import *
 
 
 class NN_Set:
@@ -21,14 +21,13 @@ class Trainer:
         self.training_set = NN_Set(sets["X_train"], sets["y_train"])
         self.validation_set = NN_Set(sets["X_val"], sets["y_val"])
         self.test_set = NN_Set(sets["X_test"], sets["y_test"])
-        print(hyperparams)
 
-        self.loss = loss
+        self.loss: Loss = loss
         self.epoch = 0
-        self.max_epochs = hyperparams["n_epochs"]
-        self.batch_size = hyperparams["batch_size"]
-        self.optimizer: Optimizer_Base = Optimizer_Adam(learning_rate=hyperparams["learning_rate"])
-        self.model: NN = NN(
+        self.max_epochs: int = hyperparams["n_epochs"]
+        self.batch_size: int = hyperparams["batch_size"]
+        self.optimizer = Optimizer_Adam(learning_rate=hyperparams["learning_rate"])
+        self.model = NN(
             l1 = hyperparams["l1"],
             l2= hyperparams["l2"],
             input_size=6,
@@ -41,14 +40,13 @@ class Trainer:
 
     def run(self) -> dict:        
         # Before training loop:
-        print("Data shapes:")
-        print(f"X_train: {self.training_set.samples.shape}, y_train: {self.training_set.targets.shape}")        
+        print(f"Data shapes: \nX_train: {self.training_set.samples.shape}, y_train: {self.training_set.targets.shape}")        
         metrics = self.train(self.max_epochs, self.batch_size)
         
         test_accuracy, test_loss = self.test()
         
-        plot_losses(metrics["train_losses"], metrics["val_losses"], test_loss, label1="Training Loss", label2="Validation Loss", title="Loss Over Epochs")
-        plot_accuracies(metrics["train_accuracies"], metrics["val_accuracies"], test_accuracy, label1="Training Accuracies", label2="Validation Accuracies", title="Accuracy Over Epochs")
+        plot_losses(metrics["train_losses"], metrics["val_losses"], test_loss)
+        plot_accuracies(metrics["train_accuracies"], metrics["val_accuracies"], test_accuracy)
 
         return {
             "train_loss" : metrics["train_losses"],
