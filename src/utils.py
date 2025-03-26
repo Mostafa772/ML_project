@@ -1,3 +1,6 @@
+import os
+import pickle
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -22,7 +25,7 @@ def create_batches(X, y, batch_size: int):
         yield X[batch_indices], y[batch_indices]
 
 
-def plot_accuracies(train_vals: np.ndarray, val_vals: np.ndarray, test_accuracy: float, label1="Training accuracies", label2="Validation accuracies", label3="Test accuracy", title="Accuracy Over Epochs"):
+def plot_accuracies(train_vals: np.ndarray, val_vals: np.ndarray, test_accuracy: float, label1="Training accuracies", label2="Validation accuracies", label3="Test accuracy", title="Accuracy Over Epochs", filename: str| None = None):
     """
     Plot training and validation accuracies over epochs.
 
@@ -40,10 +43,14 @@ def plot_accuracies(train_vals: np.ndarray, val_vals: np.ndarray, test_accuracy:
     plt.ylabel("Accuracy")
     plt.legend()
     plt.grid(True)
-    plt.show()
+    if filename:
+        with open(filename, "wb") as file:
+            plt.savefig(file)
+    else:
+        plt.show()
 
 
-def plot_losses(train_vals: np.ndarray, val_vals: np.ndarray, test_loss: float, label1="Training loss", label2="Validation loss", label3 = "Test loss", title="Loss Over Epochs"):
+def plot_losses(train_vals: np.ndarray, val_vals: np.ndarray, test_loss: float, label1="Training loss", label2="Validation loss", label3 = "Test loss", title="Loss Over Epochs", filename: str| None = None):
     """
     Plot training and validation losses over epochs.
 
@@ -61,7 +68,11 @@ def plot_losses(train_vals: np.ndarray, val_vals: np.ndarray, test_loss: float, 
     plt.ylabel("Loss")
     plt.legend()
     plt.grid(True)
-    plt.show()
+    if filename:
+        with open(filename, "wb") as file:
+            plt.savefig(file)
+    else:
+        plt.show()
 
 def to_ndarray(array: pd.DataFrame | pd.Series | np.ndarray) -> np.ndarray:
     if isinstance(array, np.ndarray):
@@ -72,3 +83,32 @@ def to_ndarray(array: pd.DataFrame | pd.Series | np.ndarray) -> np.ndarray:
     
     if isinstance(array, pd.Series):
         return array.array.to_numpy()
+
+
+def save_results(dataset: str, model, best_hyperparams, metrics, save_accuracies=False):
+    "Saves model weights, hyperparams and results in the /data/{dataset} directory"
+    pwd = os.curdir
+    directory = f"{pwd}/data/{dataset}/"
+    try:
+        os.mkdir(directory)
+    except:
+        pass
+
+    print(directory)
+    # Save model weights
+    with open(f"{directory}weights.bin", "wb") as file:
+        np.save(file, model.layers)
+    
+    # Save best found hyperparameters
+    with open(f"{directory}hyperparams.bin", "wb") as file:
+        pickle.dump(best_hyperparams, file)
+
+    # Save metrics
+    with open(f"{directory}metrics.bin", "wb") as file:
+        pickle.dump(metrics, file)
+
+    # Save Graphs
+    plot_losses(metrics["train_loss"], metrics["validation_loss"], metrics["test_loss"], filename = f"{directory}losses.png")
+    if save_accuracies:
+        plot_accuracies(metrics["train_accuracy"], metrics["validation_accuracy"], metrics["test_accuracy"], filename = f"{directory}accuracy.png")
+
