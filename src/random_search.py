@@ -1,3 +1,7 @@
+import numpy as np
+import random
+from src.train_and_evaluate import *
+
 # Random search for finding the best hyperparameters
 def random_search(param_distributions, n_iters):
     best_hyperparams = None
@@ -22,3 +26,4 @@ def random_search(param_distributions, n_iters):
             best_performance = val_accuracy
             best_hyperparams = params
     return best_hyperparams, best_performance
+
