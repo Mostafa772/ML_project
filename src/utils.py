@@ -31,39 +31,39 @@ def normalize(data, type="minmax"):
     return final_data
 
 
-def train_test_split(data, train_percent=80, target=None):
+# def train_test_split(data, train_percent=80, target=None):
     
-    """
-    Splits the data into training and testing sets.
+#     """
+#     Splits the data into training and testing sets.
 
-    Parameters:
-    - data (DataFrame): The input data to be split.
-    - train_percent (int): The percentage of data to be used for training. Default is 80.
+#     Parameters:
+#     - data (DataFrame): The input data to be split.
+#     - train_percent (int): The percentage of data to be used for training. Default is 80.
 
-    Returns:
-    - X_train (DataFrame): Training features.
-    - X_test (DataFrame): Testing features.
-    - y_train (Series): Training labels.
-    - y_test (Series): Testing labels.
-    """
-    # Shuffle the data
-    shuffled_data = data.sample(frac=1, random_state=42).reset_index(drop=True)
+#     Returns:
+#     - X_train (DataFrame): Training features.
+#     - X_test (DataFrame): Testing features.
+#     - y_train (Series): Training labels.
+#     - y_test (Series): Testing labels.
+#     """
+#     # Shuffle the data
+#     shuffled_data = data.sample(frac=1, random_state=42).reset_index(drop=True)
     
-    # Calculate the split index
-    split_index = int(len(shuffled_data) * train_percent / 100)
+#     # Calculate the split index
+#     split_index = int(len(shuffled_data) * train_percent / 100)
     
-    # Split the data into training and testing sets
-    train_data = shuffled_data[:split_index]
-    test_data = shuffled_data[split_index:]
+#     # Split the data into training and testing sets
+#     train_data = shuffled_data[:split_index]
+#     test_data = shuffled_data[split_index:]
     
-    # Separate features and labels
-    X_train = train_data.drop(columns=target)
-    y_train = train_data[target]
+#     # Separate features and labels
+#     X_train = train_data.drop(columns=target)
+#     y_train = train_data[target]
 
-    X_test = test_data.drop(columns=target)
-    y_test = test_data[target]
+#     X_test = test_data.drop(columns=target)
+#     y_test = test_data[target]
     
-    return X_train, X_test, y_train, y_test
+#     return X_train, X_test, y_train, y_test
     
     
     
