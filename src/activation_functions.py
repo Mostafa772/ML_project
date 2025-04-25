@@ -9,8 +9,7 @@ class Activation_Linear:
         
     def backward(self, dvalues):
         self.dinputs = dvalues.copy()
-        
-        
+
 class Activation_ReLU:
     def forward(self, inputs):
         self.inputs = inputs
@@ -55,6 +54,16 @@ class Activation_Tanh:
         self.dinputs = 1 - (self.output)**2
         self.dinputs *= dvalues
 
+class Activation_ELU:
+    def forward(self, inputs, alpha=1.0):   
+        self.inputs = inputs 
+        self.output = np.where(inputs > 0, inputs, alpha * np.exp(inputs) - 1)
+    def backward(self, dvalues, alpha):
+        self.dinputs = dvalues.copy()
+        self.dinputs[self.inputs < 0] = dvalues[self.inputs < 0] * (self.output + alpha)
+        self.dinputs 
+    
+    
 class Activation_Softmax:
     def forward(self, inputs):
         self.inputs = inputs
