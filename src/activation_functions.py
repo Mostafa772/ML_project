@@ -9,8 +9,7 @@ class Activation_Linear:
         
     def backward(self, dvalues):
         self.dinputs = dvalues.copy()
-        
-        
+
 class Activation_ReLU:
     def forward(self, inputs):
         self.inputs = inputs
@@ -37,13 +36,13 @@ class Activation_Leaky_ReLU:
 class Activation_Sigmoid:
     def forward(self, inputs):
         self.inputs = inputs
-        self.output = 1/(1 + np.exp(-inputs))
-
-    def backward(self, dvalues):  # f′(x) = σ(x)⋅(1−σ(x))
-        self.dinputs = dvalues.copy()
-        self.dinputs = self.output * (1 - self.output)
-        self.dinputs *= dvalues
-
+        self.output = 1 / (1 + np.exp(-inputs))
+    
+    def backward(self, dvalues):
+        # Compute derivative of sigmoid
+        sigmoid_derivative = self.output * (1 - self.output)
+        # Multiply by incoming gradients (chain rule)
+        self.dinputs = dvalues * sigmoid_derivative
 
 class Activation_Tanh:
     def forward(self, inputs):
@@ -55,6 +54,16 @@ class Activation_Tanh:
         self.dinputs = 1 - (self.output)**2
         self.dinputs *= dvalues
 
+class Activation_ELU:
+    def forward(self, inputs, alpha=1.0):   
+        self.inputs = inputs 
+        self.output = np.where(inputs > 0, inputs, alpha * np.exp(inputs) - 1)
+    def backward(self, dvalues, alpha):
+        self.dinputs = dvalues.copy()
+        self.dinputs[self.inputs < 0] = dvalues[self.inputs < 0] * (self.output + alpha)
+        self.dinputs 
+    
+    
 class Activation_Softmax:
     def forward(self, inputs):
         self.inputs = inputs
