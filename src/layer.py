@@ -23,40 +23,37 @@ class Layer(ABC):
 
     @abstractmethod
     def forward(self, inputs: np.ndarray):
-        raise NotImplemented
+        raise NotImplementedError
 
     @abstractmethod
     def backward(self, dvalues: np.ndarray):
-        raise NotImplemented
+        raise NotImplementedError
 
 class Layer_Dense(Layer):
     def __init__(self, n_inputs: int, n_neurons: int, activation: Activation = Activation_Sigmoid(), l1: float = 0, l2: float = 0):
         super().__init__(n_inputs, n_neurons, activation)
         self.l1 = l1
         self.l2 = l2
+
+        self.inp = n_inputs
+        self.outp = n_neurons
         
     def forward(self, inputs: np.ndarray) -> np.ndarray:
         self.inputs = inputs
         self.net = np.dot(inputs, self.weights) + self.biases
         self.output = self.activation(self.net)
+
         return self.output
 
     def backward(self, dvalues: np.ndarray) -> np.ndarray:
+        """ -2 delta_p f'(net(x_p)) x_{p,i} """
         # Compute gradient of the activation function
         derivative = self.activation.backward(self.net)
-        dvalues *= derivative
+        dvalues = dvalues * derivative
         
         # Gradients on weights and biases
         self.dbiases = np.sum(dvalues, axis=0, keepdims=True)
         self.dweights = np.dot(self.inputs.T, dvalues)
-        
-        # # L1 regularization on weights
-        # if self.l1 > 0:
-        #     self.dweights += self.l1 * np.sum(np.linalg.norm(self.weights, ord=1))
-        
-        # # L2 regularization on weights
-        # if self.l2 > 0:
-        #     self.dweights += 2 * self.l2 * np.sum(np.square(self.weights))
         
         # Gradient on inputs
         self.dinputs = np.dot(dvalues.T, self.inputs)

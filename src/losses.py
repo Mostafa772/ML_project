@@ -38,8 +38,9 @@ class Loss_CategoricalCrossentropy(Loss):
         y_pred = np.clip(y_pred, 1e-12, 1 - 1e-12)  # Avoid log(0)
         return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
 
-    def backward(self, dvalues, y_true) -> np.ndarray:
-        return dvalues - y_true
+    def backward(self, dvalues: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+        size = dvalues.shape[1]
+        return dvalues - y_true.reshape(-1, size)
 
 
 class Activation_Softmax_Loss_CategoricalCrossentropy():

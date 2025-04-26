@@ -34,13 +34,13 @@ class Trainer:
             hidden_sizes= hyperparams["hidden_sizes"],
             output_size= hyperparams["output_size"],
             hidden_activations=[hyperparams["activation"]],
+            output_activation=hyperparams["out_activation"],
             dropout_rates=[hyperparams["dropout_rate"]]
         )
         self.early_stopping = EarlyStopping(patience=hyperparams["patience"])
 
     def run(self) -> dict:        
-        # Before training loop:
-        print(f"Data shapes: \nX_train: {self.training_set.samples.shape}, y_train: {self.training_set.targets.shape}")        
+        # Before training loop: 
         metrics = self.train(self.max_epochs, self.batch_size)
         
         test_accuracy, test_loss = self.test()
@@ -93,7 +93,7 @@ class Trainer:
         batch_accuracies = []
 
         for X_batch, y_batch in create_batches(self.training_set.samples, self.training_set.targets, batch_size):
-            # print(f"batch size {X_batch.shape}") Later to fix
+            
             # Forward pass
             output = self.model.forward(X_batch, training=True)
             
@@ -114,6 +114,7 @@ class Trainer:
             for layer in reversed(self.model.layers):
                 # Ensure numpy arrays
                 dvalues = to_ndarray(dvalues)
+
                 dvalues = layer.backward(dvalues)
                 self.optimizer.update_params(layer)
                 

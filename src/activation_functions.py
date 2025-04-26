@@ -9,7 +9,7 @@ class Activation(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def backward(self, dvalues):
+    def backward(self, dvalues) -> np.ndarray:
         raise NotImplementedError
 
     def __call__(self, inputs):
@@ -20,8 +20,8 @@ class Activation_Linear(Activation):
     def forward(self, inputs):
         return inputs
 
-    def backward(self, dvalues):
-        return 1
+    def backward(self, dvalues) -> np.ndarray:
+        return np.ones(dvalues.shape)
 
 class Activation_ReLU(Activation):
     def forward(self, inputs):
@@ -64,15 +64,13 @@ class Activation_Sigmoid(Activation):
 
 class Activation_Tanh(Activation):
     def forward(self, inputs):
-        self.inputs = inputs
         self.output = np.tanh(inputs)
         return self.output
 
-    def backward(self, dvalues):  # f′(x) = 1−tanh**2(x)
-        self.dinputs = dvalues.copy()
-        self.dinputs = 1 - (self.output)**2
-        self.dinputs *= dvalues
-        return self.dinputs
+    def backward(self, dvalues: np.ndarray) -> np.ndarray:  # f′(x) = 1−tanh**2(x)
+        dinputs = 1 - (self.output)**2
+        dvalues *= dinputs
+        return dvalues
 
 class Activation_Softmax(Activation):
     def forward(self, inputs):
