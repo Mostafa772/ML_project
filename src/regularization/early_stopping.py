@@ -24,7 +24,7 @@ class EarlyStopping:
         self.wait = -1  # Counter for epochs without improvement
         self.stop_training = False
 
-    def on_epoch_end(self, current_loss: float, current_accuracy: float, model: NN) -> bool:
+    def on_epoch_end(self,  model: NN, current_loss: float, current_accuracy: float = 0) -> bool:
         """
         Call this at the end of each epoch.
         Returns a flag indicating wether or not training should stop.
@@ -40,10 +40,9 @@ class EarlyStopping:
 
         if loss_improved:
             self.best_loss = current_loss
-        if accuracy_improved:
             self.best_accuracy = current_accuracy
 
-        if loss_improved or accuracy_improved:
+        if loss_improved:
             # Improvement detected
             self.best_weights = [layer.weights for layer in model.layers]
             self.best_epoch += self.wait + 1

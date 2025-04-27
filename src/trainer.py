@@ -74,7 +74,7 @@ class Trainer:
             val_losses.append(val_loss)
             val_accuracies.append(val_accuracy)
 
-            self.early_stopping.on_epoch_end(val_loss, val_accuracy, self.model)
+            self.early_stopping.on_epoch_end(self.model, val_loss, val_accuracy)
             if self.early_stopping.stop_training:
                 break
             
@@ -98,7 +98,7 @@ class Trainer:
             output = self.model.forward(X_batch, training=True)
             
             # Calculate loss
-            loss = self.loss(output, y_batch)
+            loss = self.loss(output, y_batch, self.model)
 
             predictions = np.round(output.squeeze())
             accuracy = np.mean(predictions == y_batch.squeeze())
