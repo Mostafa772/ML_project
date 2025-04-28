@@ -31,24 +31,17 @@ class EarlyStopping:
         - current_accuracy: The validation accuracy from the current epoch.
         - model: The model being trained (to save the best weights).
         """
-        # Check if either loss or accuracy has improved
-        loss_improved = current_loss < self.best_loss - self.min_delta_loss
-        accuracy_improved = current_accuracy > self.best_accuracy + self.min_delta_accuracy
-
-        if loss_improved or accuracy_improved:
-            print("loss_improved: ", loss_improved, "accuracy_improved: ", accuracy_improved)
-            # Improvement detected
-            if loss_improved:
-                self.best_loss = current_loss
-            if accuracy_improved:
-                self.best_accuracy = current_accuracy
+        # Check if either loss has improved
+        if current_loss < self.best_loss - self.min_delta_loss:
+            self.best_loss = current_loss
+            self.best_accuracy = current_accuracy
+            
             self.best_epoch = epoch
-            self.wait = 0
-        else:
-            # No improvement
-            self.wait += 1
-            if self.wait >= self.patience:
-                self.stop_training = True
+            self.wait = -1
+        
+        self.wait += 1
+        if self.wait >= self.patience:
+            self.stop_training = True
 
     def restore_weights(self, model):
         """
