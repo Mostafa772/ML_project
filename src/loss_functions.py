@@ -3,7 +3,6 @@ import numpy as np
 import random
 import pandas as pd
 from itertools import product
-from sklearn.model_selection import train_test_split
 from src.optimizers import *
 from src.activation_functions import *
 from src.utils import *
@@ -80,19 +79,31 @@ class Activation_Softmax_Loss_CategoricalCrossentropy():
         self.dinputs = self.dinputs / samples
 
 
+# class MSE:
+#     def __init__(self):
+#         self.dinputs = 0
+#         self.output = 0
+
+#     def forward(self, y_pred, y_true):
+#         self.output = np.mean((y_pred - y_true)**2)
+#         return self.output
+
+#     def backward(self, dvalues, y_true):
+#         samples = len(dvalues)
+#         outputs = len(dvalues[0])
+
+#         self.dinputs = -2 * (y_true - dvalues) / outputs
+#         self.dinputs = self.dinputs / samples
 class MSE:
     def __init__(self):
-        self.dinputs = 0
-        self.loss = 0
-        self.output = 0
+        self.dinputs = None
+        self.output = None
 
     def forward(self, y_pred, y_true):
-        self.output = np.mean((y_pred - y_true)**2)
-        return self.output
+        # Save element-wise squared differences
+        self.output = (y_pred - y_true) ** 2
+        return np.mean(self.output)
 
-    def backward(self, dvalues, y_true):
-        samples = len(dvalues)
-        outputs = len(dvalues[0])
-
-        self.dinputs = -2 * (y_true - dvalues) / outputs
-        self.dinputs = self.dinputs / samples
+    def backward(self, y_pred, y_true):
+        samples = len(y_pred)
+        self.dinputs = 2 * (y_pred - y_true) / samples

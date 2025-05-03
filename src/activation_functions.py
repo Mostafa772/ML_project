@@ -58,27 +58,61 @@ class Activation_ELU:
     def forward(self, inputs, alpha=1.0):   
         self.inputs = inputs 
         self.output = np.where(inputs > 0, inputs, alpha * np.exp(inputs) - 1)
+        
     def backward(self, dvalues, alpha):
         self.dinputs = dvalues.copy()
         self.dinputs[self.inputs < 0] = dvalues[self.inputs < 0] * (self.output + alpha)
         self.dinputs 
     
     
+    # class Activation_Softmax:
+    #     def forward(self, inputs):
+    #         self.inputs = inputs
+    #         exp_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
+    #         probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
+    #         self.output = probabilities
+
+    #     def backward(self, dvalues):
+    #         self.dinputs = np.empty_like(dvalues)
+            
+    #         for index, (single_output, single_dvalues) in \
+    #                 enumerate(zip(self.output, dvalues)):
+    #             single_output = single_output.reshape(-1, 1)
+                
+    #             jacobian_matrix = np.diagflat(single_output) - \
+    #                                 np.dot(single_output, single_output.T)
+
+    #             self.dinputs[index] = np.dot(jacobian_matrix, single_dvalues)
 class Activation_Softmax:
-    def forward(self, inputs):
+    def forward(self, inputs, training=True):
+        # Store inputs for backward pass
         self.inputs = inputs
+        
+        # Get unnormalized probabilities by subtracting max for numerical stability
         exp_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
+        
+        # Normalize for each sample
         probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
-        self.output = probabilities
+        
+        # Add epsilon to avoid zero probabilities
+        epsilon = 1e-7
+        self.output = np.clip(probabilities, epsilon, 1 - epsilon)
+        
+        return self.output
 
     def backward(self, dvalues):
+        # Create uninitialized array
         self.dinputs = np.empty_like(dvalues)
         
-        for index, (single_output, single_dvalues) in \
-                enumerate(zip(self.output, dvalues)):
+        # Enumerate outputs and gradients
+        for index, (single_output, single_dvalues) in enumerate(zip(self.output, dvalues)):
+            # Reshape output array
             single_output = single_output.reshape(-1, 1)
             
-            jacobian_matrix = np.diagflat(single_output) - \
-                                np.dot(single_output, single_output.T)
-
+            # Calculate Jacobian matrix of the output
+            jacobian_matrix = np.diagflat(single_output) - np.dot(single_output, single_output.T)
+            
+            # Calculate sample-wise gradient
             self.dinputs[index] = np.dot(jacobian_matrix, single_dvalues)
+        
+        return self.dinputs

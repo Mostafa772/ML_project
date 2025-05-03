@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from functools import reduce
+import operator
 
 
 def normalize(data, type="minmax"):
@@ -29,42 +31,6 @@ def normalize(data, type="minmax"):
     final_data = pd.concat([non_numeric_data, normalized_data], axis=1)
 
     return final_data
-
-
-# def train_test_split(data, train_percent=80, target=None):
-    
-#     """
-#     Splits the data into training and testing sets.
-
-#     Parameters:
-#     - data (DataFrame): The input data to be split.
-#     - train_percent (int): The percentage of data to be used for training. Default is 80.
-
-#     Returns:
-#     - X_train (DataFrame): Training features.
-#     - X_test (DataFrame): Testing features.
-#     - y_train (Series): Training labels.
-#     - y_test (Series): Testing labels.
-#     """
-#     # Shuffle the data
-#     shuffled_data = data.sample(frac=1, random_state=42).reset_index(drop=True)
-    
-#     # Calculate the split index
-#     split_index = int(len(shuffled_data) * train_percent / 100)
-    
-#     # Split the data into training and testing sets
-#     train_data = shuffled_data[:split_index]
-#     test_data = shuffled_data[split_index:]
-    
-#     # Separate features and labels
-#     X_train = train_data.drop(columns=target)
-#     y_train = train_data[target]
-
-#     X_test = test_data.drop(columns=target)
-#     y_test = test_data[target]
-    
-#     return X_train, X_test, y_train, y_test
-    
     
     
 def create_batches(X, y, batch_size):
@@ -129,3 +95,94 @@ def plot_losses(train_vals, val_vals, label1="train_losses", label2="val_losses"
     plt.legend()
     plt.grid(True)
     plt.show()
+
+
+def count_permutations(param_grid):
+    """
+    Counts the number of all possible permutations from a hyperparameter grid.
+    
+    Parameters:
+    - param_grid (dict): Dictionary where keys are hyperparameter names and values are numpy arrays of options.
+    
+    Returns:
+    - int: Total number of possible permutations.
+    """
+    sizes = [len(values) for values in param_grid.values()]
+    return reduce(operator.mul, sizes, 1)
+
+def train_val_split(X, y, val_ratio=0.2, seed=42, shuffle=True):
+    """
+    Manually split X and y into training and validation sets.
+
+    Parameters:
+    - X: numpy array of features
+    - y: numpy array of labels
+    - val_ratio: fraction of data to use for validation
+    - seed: random seed for reproducibility
+    - shuffle: whether to shuffle before splitting
+
+    Returns:
+    - X_train, X_val, y_train, y_val
+    """
+    
+    
+    assert len(X) == len(y), "X and y must have the same number of samples"
+    if not isinstance(X, np.ndarray):
+        X = np.array(X)
+        y = np.array(y).reshape(-1, 1)
+    n_samples = len(X)
+    n_val = int(n_samples * val_ratio)
+
+    indices = np.arange(n_samples)
+    if shuffle:
+        np.random.seed(seed)
+        np.random.shuffle(indices)
+
+    val_indices = indices[:n_val]
+    train_indices = indices[n_val:]
+
+    X_train = X[train_indices]
+    y_train = y[train_indices]
+    X_val = X[val_indices]
+    y_val = y[val_indices]
+
+    return X_train, X_val, y_train, y_val
+
+
+
+
+
+# def train_test_split(data, train_percent=80, target=None):
+    
+#     """
+#     Splits the data into training and testing sets.
+
+#     Parameters:
+#     - data (DataFrame): The input data to be split.
+#     - train_percent (int): The percentage of data to be used for training. Default is 80.
+
+#     Returns:
+#     - X_train (DataFrame): Training features.
+#     - X_test (DataFrame): Testing features.
+#     - y_train (Series): Training labels.
+#     - y_test (Series): Testing labels.
+#     """
+#     # Shuffle the data
+#     shuffled_data = data.sample(frac=1, random_state=42).reset_index(drop=True)
+    
+#     # Calculate the split index
+#     split_index = int(len(shuffled_data) * train_percent / 100)
+    
+#     # Split the data into training and testing sets
+#     train_data = shuffled_data[:split_index]
+#     test_data = shuffled_data[split_index:]
+    
+#     # Separate features and labels
+#     X_train = train_data.drop(columns=target)
+#     y_train = train_data[target]
+
+#     X_test = test_data.drop(columns=target)
+#     y_test = test_data[target]
+    
+#     return X_train, X_test, y_train, y_test
+    
