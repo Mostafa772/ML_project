@@ -1,13 +1,16 @@
-import numpy as np
 import random
+
+import numpy as np
 import pandas as pd
-from src.optimizers import *
+
 from src.activation_functions import *
-from src.utils import *
-from src.model_regularization import *
-from src.layer import *
+from src.batch_normalization import *
 from src.data_preprocessing import *
-from src.batch_normalization import * 
+from src.layer import *
+from src.model_regularization import *
+from src.optimizers import *
+from src.utils import *
+
 
 class NN:
     def __init__(self, l1, l2, input_size, hidden_sizes, output_size,
