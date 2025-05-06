@@ -31,7 +31,7 @@ class EarlyStopping:
         - current_accuracy: The validation accuracy from the current epoch.
         - model: The model being trained (to save the best weights).
         """
-        # Check if either loss has improved
+        # Check if loss has improved
         if current_loss < self.best_loss - self.min_delta_loss:
             self.best_loss = current_loss
             self.best_accuracy = current_accuracy

@@ -1,15 +1,6 @@
-from src.neural_network import *
 import numpy as np
-import random
-import pandas as pd
-from itertools import product
-from src.optimizers import *
-from src.activation_functions import *
-from src.utils import *
-from src.model_regularization import *
-from src.layer import *
-from src.random_search import *
-from src.data_preprocessing import *
+
+from activation_functions import Activation_Softmax
 
 
 class Loss:
@@ -28,7 +19,7 @@ class Loss_CategoricalCrossentropy(Loss):
             correct_confidence = y_pred_clipped[range(samples), y_true]
 
         elif len(y_true.shape) == 2:
-            correct_confidence = np.sum(y_pred_clipped * y_true, axis=1)
+            correct_confidence = np.sum(y_pred_clipped * y_true, axis=1) 
 
         negative_log_likelihoods = np.log(correct_confidence)
         return negative_log_likelihoods
@@ -51,11 +42,12 @@ class Loss_CategoricalCrossentropy(Loss):
         self.dinputs = self.dinputs / samples
 
 
-class Activation_Softmax_Loss_CategoricalCrossentropy():
+class Activation_Softmax_Loss_CategoricalCrossentropy(Loss):
 
     def __init__(self):
         self.activation = Activation_Softmax()
         self.loss = Loss_CategoricalCrossentropy()
+
 
     def forward(self, inputs, y_true):
         # Output layer's activation function
@@ -79,31 +71,44 @@ class Activation_Softmax_Loss_CategoricalCrossentropy():
         self.dinputs = self.dinputs / samples
 
 
-# class MSE:
-#     def __init__(self):
-#         self.dinputs = 0
-#         self.output = 0
-
-#     def forward(self, y_pred, y_true):
-#         self.output = np.mean((y_pred - y_true)**2)
-#         return self.output
-
-#     def backward(self, dvalues, y_true):
-#         samples = len(dvalues)
-#         outputs = len(dvalues[0])
-
-#         self.dinputs = -2 * (y_true - dvalues) / outputs
-#         self.dinputs = self.dinputs / samples
-class MSE:
+class MSE(Loss):
     def __init__(self):
         self.dinputs = None
         self.output = None
 
     def forward(self, y_pred, y_true):
-        # Save element-wise squared differences
-        self.output = (y_pred - y_true) ** 2
-        return np.mean(self.output)
+        # Remove the shape condition - always calculate loss
+        self.output = np.mean((y_pred - y_true)**2)
+        return self.output
 
-    def backward(self, y_pred, y_true):
-        samples = len(y_pred)
-        self.dinputs = 2 * (y_pred - y_true) / samples
+    def backward(self, dvalues, y_true):
+        samples = len(dvalues)
+        self.dinputs = 2 * (dvalues - y_true) / samples
+
+class MEE(Loss):
+    def __init__(self):
+        self.dinputs = 0
+        self.loss = 0
+        self.output = 0
+    
+    def forward(self, y_pred, y_true):
+        self.output = np.mean(np.sqrt(np.sum((y_pred - y_true)**2, axis=1)))
+        return self.output
+    
+    def backward(self, dvalues, y_true):
+        # Number of samples and outputs
+        samples = len(dvalues)
+        outputs = len(dvalues[0])
+
+        differences = dvalues - y_true
+        euclidean_distances = np.sqrt(np.sum(differences**2, axis=1, keepdims=True))
+        
+        # Avoid division by zero
+        euclidean_distances = np.maximum(euclidean_distances, 1e-7)
+
+        self.dinputs = differences / euclidean_distances
+        
+        # Normalize by number of samples and outputs
+        self.dinputs = self.dinputs / (samples * outputs)
+        
+        return self.dinputs
