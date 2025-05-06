@@ -1,4 +1,4 @@
-from src.train_and_evaluate import *
+from train_and_evaluate import *
 def k_fold_cross_validation_manual(X, y, l1, l2, hidden_size, hidden_activation, dropout_rate, use_batch_norm,
                                    learning_rate=0.1, n_epochs=150, batch_size=1000, weight_decay=1e-3, k=5, seed=42):
     np.random.seed(seed)
