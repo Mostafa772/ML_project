@@ -19,6 +19,7 @@ class Layer_Dense:
     def forward(self, inputs):
         self.inputs = inputs
         self.output = np.dot(inputs, self.weights) + self.biases
+        return self.output
    
     def backward(self, dvalues):
         # Gradients on parameters
@@ -40,7 +41,8 @@ class Layer_Dense:
             self.dweights += 2 * self.l2 * self.weights
             
         # Gradient on values 
-        self.dinputs = np.dot(dvalues, self.weights.T)  
+        self.dinputs = np.dot(dvalues, self.weights.T)
+        return self.dinputs
                
     def get_regularization_loss(self):
         """
