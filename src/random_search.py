@@ -4,6 +4,37 @@ import csv
 from neural_network import *
 from k_fold_cross_validation import *
 # Random search for finding the best hyperparameters
+
+
+param_distributions = {
+    'hidden_size': [[3], [4], [5], [6]],
+    'hidden_activation': [[Activation_Tanh], [Activation_Leaky_ReLU], [Activation_Sigmoid], [Activation_ReLU]],
+    'batch_norm': [[True], [False]],
+    'learning_rate': [1e-4, 1e-3, 1e-2, 1e-1],
+    'l1': [0.0, 1e-5, 1e-4, 1e-3, 1e-2],
+    'l2': [0.0, 1e-5, 1e-4, 1e-3, 1e-2],
+    'dropout_rate': [0.0, 0.1, 0.3],
+    'batch_size': [1000],
+    'n_epochs': [150, 200],
+    'weight_decay': list(np.arange(0.0, 0.05, 0.01))
+    # # Define combinations of hidden layer sizes and corresponding activations
+    # 'hidden_configs': [
+    #     {'hidden_size': [10], 'hidden_activation': [Activation_Tanh], 'batch_norm' : [True]},
+    #     {'hidden_size': [10, 10], 'hidden_activation': [Activation_Leaky_ReLU, Activation_ELU], 'batch_norm' : [True, True]},
+    #     {'hidden_size': [10, 10], 'hidden_activation': [Activation_Leaky_ReLU, Activation_ELU], 'batch_norm' : [True, True]},
+    #     {'hidden_size': [20, 20], 'hidden_activation': [Activation_Leaky_ReLU, Activation_ELU], 'batch_norm' : [True, False]},
+    #     {'hidden_size': [20, 20], 'hidden_activation': [Activation_Leaky_ReLU, Activation_ELU], 'batch_norm' : [True, True]},
+    #     {'hidden_size': [20, 20], 'hidden_activation': [Activation_ELU, Activation_ELU], 'batch_norm' : [True, False]},
+    #     {'hidden_size': [10, 10], 'hidden_activation': [Activation_Leaky_ReLU, Activation_ELU], 'batch_norm' : [True, False]},
+    #     {'hidden_size': [32, 16], 'hidden_activation': [Activation_Leaky_ReLU, Activation_Sigmoid], 'batch_norm' : [False, True]},
+    #     {'hidden_size': [30, 30], 'hidden_activation': [Activation_Leaky_ReLU, Activation_ELU], 'batch_norm' : [True, False]},
+    #     {'hidden_size': [64, 32, 16], 'hidden_activation': [Activation_ReLU, Activation_ReLU, Activation_Tanh], 'batch_norm' : [True, False, True]},
+    #     {'hidden_size': [30, 30], 'hidden_activation': [Activation_Leaky_ReLU, Activation_ELU], 'batch_norm': [True, False]}
+    # ]
+}
+
+
+
 def random_search(X_train, y_train, param_distributions, n_iters, csv_path="top_5_results.csv"):
     results = []
 
@@ -46,3 +77,5 @@ def random_search(X_train, y_train, param_distributions, n_iters, csv_path="top_
     # Return best of top 5
     best = top_results[0]
     return best, best["val_accuracy"]
+
+
