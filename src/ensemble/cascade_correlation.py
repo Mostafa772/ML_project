@@ -18,8 +18,8 @@ class CascadeCorrelation(Base_NN):
         if self.is_limit_reached():
             return self
 
-        out_layer = self.layers[-2]
         out_act = self.layers[-1]
+        out_layer = self.layers[-2]
         last_hidden_neuron = self.layers[-4]
 
         # freeze previous neuron training
@@ -55,12 +55,17 @@ class CascadeCorrelationLayer(Layer_Dense):
         self.is_output = is_output
 
     def add_input_connection(self):
-        scale = np.sqrt(2 / (self.weights.shape[0] + 1))
-        new_weights = np.random.randn(self.weights.shape[0], 1) * scale
+        prev = self.weights.shape
+        scale = np.sqrt(2 / (self.weights.shape[0] + 1)) / 10
+        new_weights = np.random.randn(1, 1) * scale
 
-        assert self.weights[0] == new_weights[0]
-        self.weights = np.append(self.weights, new_weights, axis=1) # add column
-    
+        assert self.weights.shape[1] == new_weights.shape[1]
+        self.weights = np.append(self.weights, new_weights, axis=0) # add row
+        if hasattr(self, 'weight_cache'):
+            zero_padding = np.zeros((1,1))
+            self.weight_momentums = np.append(self.weight_momentums, zero_padding, axis=0)
+            self.weight_cache = np.append(self.weight_cache, zero_padding, axis=0)
+
     def forward(self, inputs: np.ndarray):
         """
         Fowards the output of the neuron with the input
