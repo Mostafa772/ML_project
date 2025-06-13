@@ -1,7 +1,6 @@
 from neural_network import *
 # from ensemble_learning import *
 from random_search import *
-from data_split import *
 
 best_params, best_acc = random_search(
     X_train, y_train, param_distributions, n_iters=10)
