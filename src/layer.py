@@ -2,15 +2,21 @@ import numpy as np
 import pandas as pd
 
 class Layer_Dense:
-
-    def __init__(self, n_inputs, n_neurons, weights_init="x", l1=0.0, l2=0.0, ):
-        # Normal Xavier initialization
-        scale = np.sqrt(2 / (n_inputs + n_neurons))  # For Leaky ReLU/ReLU activation functions
-        # HHe Normal Initialization
-        # scale = np.sqrt(2/n_inputs) # For Tanh/Sigmoid activation functions
-        self.weights = np.random.randn(n_inputs, n_neurons) * scale
-        #Random initialization
-        # self.weights = 0.1 * np.random.randn(n_inputs, n_neurons)
+    def __init__(self, n_inputs, n_neurons, weights_init="gaussian", l1=0.0, l2=0.0):
+        if weights_init == "gaussian":
+            self.weights = np.random.normal(0.0, 1.0, (n_inputs, n_neurons))  # std=1
+        elif weights_init == "gaussian_scaled":
+            self.weights = np.random.normal(0.0, 0.05, (n_inputs, n_neurons))  # smaller std
+        elif weights_init == "xavier":
+            scale = np.sqrt(2 / (n_inputs + n_neurons))
+            self.weights = np.random.randn(n_inputs, n_neurons) * scale
+        elif weights_init == "he":
+            scale = np.sqrt(2 / n_inputs)
+            self.weights = np.random.randn(n_inputs, n_neurons) * scale
+        elif weights_init == "random":
+            self.weights = 0.1 * np.random.randn(n_inputs, n_neurons)
+        else:
+            raise ValueError(f"Unknown weights_init: {weights_init}")
         self.biases = np.zeros((1, n_neurons))
         self.l1 = l1
         self.l2 = l2
