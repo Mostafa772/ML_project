@@ -1,7 +1,13 @@
 import numpy as np
 
+class Activation:
+    def forward(self, inputs):
+        raise NotImplementedError
 
-class Activation_Linear:
+    def backward(self, dvalues):
+        raise NotImplementedError
+
+class Activation_Linear(Activation):
     """Linear activation for regression output"""
     def forward(self, inputs):
         self.inputs = inputs
@@ -10,7 +16,7 @@ class Activation_Linear:
     def backward(self, dvalues):
         self.dinputs = dvalues.copy()
 
-class Activation_ReLU:
+class Activation_ReLU(Activation):
     def forward(self, inputs):
         self.inputs = inputs
         self.output = np.maximum(0, inputs)
@@ -23,7 +29,7 @@ class Activation_ReLU:
         # zero gradient where input values were negative
         self.dinputs[self.inputs <= 0] = 0
 
-class Activation_Leaky_ReLU:
+class Activation_Leaky_ReLU(Activation):
     def forward(self, inputs, alpha=0.01):
         self.inputs = inputs
         self.output = np.where(inputs > 0, inputs, alpha * inputs)
@@ -33,7 +39,7 @@ class Activation_Leaky_ReLU:
         self.dinputs = np.where(self.inputs > 0, 1, alpha)
         self.dinputs *= dvalues
 
-class Activation_Sigmoid:
+class Activation_Sigmoid(Activation):
     def forward(self, inputs):
         self.inputs = inputs
         self.output = 1 / (1 + np.exp(-inputs))
@@ -44,7 +50,7 @@ class Activation_Sigmoid:
         # Multiply by incoming gradients (chain rule)
         self.dinputs = dvalues * sigmoid_derivative
 
-class Activation_Tanh:
+class Activation_Tanh(Activation):
     def forward(self, inputs):
         self.inputs = inputs
         self.output = np.tanh(inputs)
@@ -54,7 +60,7 @@ class Activation_Tanh:
         self.dinputs = 1 - (self.output)**2
         self.dinputs *= dvalues
 
-class Activation_ELU:
+class Activation_ELU(Activation):
     def forward(self, inputs, alpha=1.0):   
         self.inputs = inputs 
         self.output = np.where(inputs > 0, inputs, alpha * np.exp(inputs) - 1)
@@ -67,6 +73,7 @@ class Activation_ELU:
     
 
 class Activation_Softmax:
+
     def forward(self, inputs, training=True):
         # Store inputs for backward pass
         self.inputs = inputs
