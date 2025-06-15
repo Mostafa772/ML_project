@@ -1,5 +1,5 @@
 from loss_functions import *
-from train_and_evaluate import *
+from train_and_evaluate import Train
 from data_preprocessing import *
 from model import *
 

@@ -1,5 +1,5 @@
 from src.train_and_evaluate import *
-
+from src.neural_network import NN
 
 def k_fold_cross_validation_manual(X, y, l1, l2, hidden_size, hidden_activation, dropout_rate, use_batch_norm, learning_rate=0.1, n_epochs=150, batch_size=1000, weight_decay=1e-3, k=5, seed=42):
     np.random.seed(seed)
@@ -31,11 +31,16 @@ def k_fold_cross_validation_manual(X, y, l1, l2, hidden_size, hidden_activation,
             dropout_rates=[dropout_rate],
             use_batch_norm=use_batch_norm
         )
-        _, val_acc = train_and_evaluate(X_train, y_train, X_val, y_val,
-                                        learning_rate=learning_rate,
-                                        n_epochs=n_epochs,
-                                        batch_size=batch_size, weight_decay=weight_decay,
-                                        model=model)
+
+        hyperparams = {
+            'learning_rate': learning_rate,
+            'n_epochs': n_epochs,
+            'batch_size': batch_size,
+            'weight_decay': weight_decay
+
+        }
+        train = Train(hyperparams, model)
+        _, val_acc = train.train_and_evaluate(X_train, y_train, X_val, y_val)
 
         val_accuracies.append(val_acc)
         print(f"✅ Fold {fold+1}/{k} | Validation Accuracy: {val_acc:.4f}")
