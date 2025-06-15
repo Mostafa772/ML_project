@@ -11,13 +11,16 @@ from src.random_search import *
 from src.loss_functions import *
 from src.data_preprocessing import *
 from src.loss_functions import *
+from src.early_stopping import EarlyStopping
+from src.ensemble.cascade_correlation import CascadeCorrelation
 
 
-def train_and_evaluate(X_train, y_train, X_val, y_val, learning_rate, n_epochs, batch_size, weight_decay, model):
+def train_and_evaluate(X_train, y_train, X_val, y_val, learning_rate, n_epochs, batch_size,
+                       weight_decay, patience, model):
     # Initialize components
     loss_function = MSE()
     optimizer = Optimizer_Adam(learning_rate=learning_rate, decay=weight_decay)
-
+    early_stopping = EarlyStopping(patience=patience, min_delta_loss=1e-5, min_delta_accuracy=0.001)
     train_losses = []
     train_accuracies = []
     val_losses = []
@@ -44,13 +47,6 @@ def train_and_evaluate(X_train, y_train, X_val, y_val, learning_rate, n_epochs, 
             for layer in reversed(model.layers):
                 layer.backward(dvalues)
                 dvalues = layer.dinputs
-                
-                # Apply L1/L2 regularization to dense layers
-                if isinstance(layer, Layer_Dense):
-                    if layer.l1 > 0:
-                        layer.dweights += layer.l1 * np.sign(layer.weights)
-                    if layer.l2 > 0:
-                        layer.dweights += 2 * layer.l2 * layer.weights
             
             # Update parameters
             optimizer.pre_update_params()
@@ -79,7 +75,29 @@ def train_and_evaluate(X_train, y_train, X_val, y_val, learning_rate, n_epochs, 
 
         val_losses.append(val_loss)
         val_accuracies.append(val_accuracy)
-
+        early_stopping.on_epoch_end(
+            current_loss=val_loss,
+            current_accuracy=val_accuracy,
+            model=model,
+            epoch=epoch
+        )
+        if early_stopping.stop_training:
+            print(f"Early stopping at epoch {epoch}")
+            # Restore best weights
+            print(f"Restoring model weights from epoch {early_stopping.best_epoch}")
+            early_stopping.restore_weights(model)
+            # Cascade correlation
+            if isinstance(model, CascadeCorrelation):
+                if model.is_limit_reached():
+                    break
+                
+                model.add_neuron()
+                early_stopping.wait = 0
+                early_stopping.patience -= int(early_stopping.patience / 10)
+                early_stopping.stop_training = False
+                print(f"Added new neuron at epoch {epoch} wiht val_loss {val_losses[-1]:.4f}")
+                continue
+            break
         # if epoch % 10 == 0:
         #     print(f"Epoch {epoch}: ", end="")
         #     print(f"Train Loss: {epoch_loss:.4f}, Acc: {epoch_accuracy*100:.2f}% | ", end="")
