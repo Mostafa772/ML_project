@@ -25,7 +25,8 @@ class Layer_Dense:
     def forward(self, inputs):
         self.inputs = inputs
         self.output = np.dot(inputs, self.weights) + self.biases
-
+        return self.output
+   
     def backward(self, dvalues):
         # Gradients on parameters
         if isinstance(dvalues, (pd.DataFrame, pd.Series)):
@@ -44,10 +45,11 @@ class Layer_Dense:
         # L2 regularization
         if self.l2 > 0:
             self.dweights += 2 * self.l2 * self.weights
-
-        # Gradient on values
+            
+        # Gradient on values 
         self.dinputs = np.dot(dvalues, self.weights.T)
-
+        return self.dinputs
+               
     def get_regularization_loss(self):
         """
         Calculate regularization loss for the layer.

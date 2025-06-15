@@ -1,8 +1,11 @@
-import random
-from train_and_evaluate import * 
 import csv
-from neural_network import *
+import random
+
 from k_fold_cross_validation import *
+from neural_network import *
+from train_and_evaluate import *
+
+
 # Random search for finding the best hyperparameters
 
 
