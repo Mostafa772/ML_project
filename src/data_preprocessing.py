@@ -4,22 +4,21 @@
 import numpy as np
 import pandas as pd
 
-
 # function to perform one hot encoding on a specific column
 def one_hot_encode(column_data):
     # Step 1: find all unique values in the column
     unique_categories = sorted(set(column_data))
     category_mapping = {category: idx for idx, category in enumerate(unique_categories)}
-    
+
     # Create empty matrix with proper dimensions
     num_samples = len(column_data)
     num_categories = len(unique_categories)
     one_hot_matrix = np.zeros((num_samples, num_categories))
-    
+
     # Fill the matrix with one-hot vectors
     for i, item in enumerate(column_data):
         one_hot_matrix[i, category_mapping[item]] = 1
-    
+
     return one_hot_matrix, category_mapping
 
 
@@ -35,7 +34,7 @@ def load_data(MONK_NUM=1,train=True):
     # test_data.head()
     y = data.iloc[:, 0]
     X = data.iloc[:, 1:]
-    
+
     encoded_columns = {}
     for col in X:
         one_hot_encoded, category_to_index_map = one_hot_encode(data[col])
@@ -58,7 +57,7 @@ def load_data(MONK_NUM=1,train=True):
 # X_train, X_val, y_train, y_val = train_test_split(
 #     X, y, test_size=0.2, random_state=42)
 
-# # Print the shape of the resulting datasets
+# Print the shape of the resulting datasets
 # print("Training Features Shape:", X_train.shape)
 # print("Validation Features Shape:", X_val.shape)
 # print("Training Target Shape:", y_train.shape)

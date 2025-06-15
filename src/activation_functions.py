@@ -65,6 +65,7 @@ class Activation_ELU:
         self.dinputs 
     
     
+
 class Activation_Softmax:
     def forward(self, inputs, training=True):
         # Store inputs for backward pass

@@ -27,17 +27,16 @@ def train_and_evaluate(X_train, y_train, X_val, y_val, learning_rate, n_epochs, 
     for epoch in range(n_epochs):
         batch_losses = []
         batch_accuracies = []
-        
+
         for X_batch, y_batch in create_batches(X_train, y_train, batch_size):
             # Forward pass through model
             model.forward(X_batch, training=True)
-            
             # Calculate loss through separate loss activation
             loss = loss_function.forward(model.output, y_batch)
             # Calculate accuracy
             predictions = np.round(model.output.squeeze())
             accuracy = np.mean(predictions == y_batch)
-            
+
             # Backward pass
             loss_function.backward(model.output, y_batch)
             dvalues = loss_function.dinputs
