@@ -38,11 +38,10 @@ class NN(Base_NN):
             dropout_rates = [0.0] * len(hidden_sizes)
 
         # Default batch_norm to False for all layers
-        if use_batch_norm is None:
-            use_batch_norm = [False] * len(hidden_sizes)
-        else:
-            assert len(use_batch_norm) == len(hidden_sizes), \
-                "use_batch_norm must have the same length as hidden_sizes"
+        if isinstance(use_batch_norm, bool):
+            use_batch_norm = [use_batch_norm] * len(hidden_sizes)
+        assert len(use_batch_norm) == len(hidden_sizes), \
+            "use_batch_norm must have the same length as hidden_sizes"
         print(hidden_sizes, hidden_activations, dropout_rates, use_batch_norm)
         # Create hidden layers
         for size, activation, rate, bn_flag in zip(hidden_sizes, hidden_activations,
