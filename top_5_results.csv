@@ -1,33 +1,51 @@
 hidden_size,hidden_activation,batch_norm,learning_rate,l1,l2,dropout_rate,batch_size,n_epochs,weight_decay,patience,CC,weights_init,val_accuracy
-[5],['Activation_Tanh'],[True],0.01,0.01,1e-06,0.1,32,100,0.01,20,False,gaussian_scaled,0.7878947368421052
-[3],['Activation_ReLU'],[False],0.01,0.001,0.001,0.1,8,100,0.001,30,False,gaussian,0.7473684210526316
-[6],['Activation_Sigmoid'],[True],0.001,0.001,0.0001,0.1,8,100,1e-05,30,False,random,0.726842105263158
-[5],['Activation_Tanh'],[True],1e-05,0.01,1e-06,0.0,32,150,0.0001,20,False,gaussian_scaled,0.6457894736842106
-[5],['Activation_Tanh'],[True],0.0001,1e-06,0.01,0.3,8,250,0.001,20,False,xavier,0.6447368421052632
-[5],['Activation_Tanh'],[False],0.0001,1e-06,1e-05,0.0,8,200,0.0001,0,False,random,0.6447368421052632
-[3],['Activation_Sigmoid'],[True],0.0002,0.0001,0.001,0.0,32,100,0.0001,30,False,gaussian_scaled,0.6047368421052631
-[5],['Activation_Leaky_ReLU'],[False],0.001,0.01,0.01,0.3,16,200,0,50,False,gaussian_scaled,0.5978947368421054
-[8],['Activation_Tanh'],[True],0.001,1e-06,0.001,0.0,32,200,0.0001,0,False,gaussian_scaled,0.5642105263157895
-[6],['Activation_Sigmoid'],[True],0.0002,0.001,0.0001,0.0,32,150,0,50,False,random,0.5594736842105263
-[5],['Activation_ReLU'],[False],1e-05,0.01,0.0001,0.1,32,200,0,20,False,gaussian,0.5563157894736841
-[8],['Activation_Leaky_ReLU'],[True],0.001,0.001,0.0001,0.3,32,300,0.01,50,False,random,0.5563157894736841
-[8],['Activation_Tanh'],[True],1e-05,0.001,0.001,0.0,8,150,0,50,False,xavier,0.5468421052631578
-[6],['Activation_ReLU'],[True],0.01,0.001,1e-05,0.0,32,250,1e-05,0,False,he,0.5463157894736842
-[8],['Activation_Leaky_ReLU'],[False],0.0002,0.01,0.01,0.3,8,150,0.05,20,False,gaussian,0.5347368421052632
-[3],['Activation_Tanh'],[True],0.0002,1e-05,0.001,0.1,32,250,0.05,50,False,random,0.5268421052631579
-[3],['Activation_Leaky_ReLU'],[True],0.001,1e-05,1e-06,0.3,16,150,0,0,False,gaussian,0.5263157894736843
-[3],['Activation_Sigmoid'],[False],0.001,1e-05,0.001,0.1,32,150,0.01,0,False,he,0.5252631578947369
-[3],['Activation_Tanh'],[False],1e-05,0.01,1e-05,0.0,8,300,1e-05,50,False,xavier,0.5226315789473684
-[8],['Activation_Leaky_ReLU'],[False],0.0001,0.0001,1e-05,0.0,32,250,0.05,50,False,gaussian_scaled,0.5173684210526316
-[5],['Activation_Sigmoid'],[True],1e-05,0.01,1e-06,0.3,32,200,0.01,0,False,he,0.5163157894736843
-[3],['Activation_ReLU'],[True],0.0001,0.01,1e-05,0.1,16,250,0.0001,30,False,gaussian,0.5147368421052632
-[3],['Activation_Sigmoid'],[True],0.0002,1e-05,0.001,0.3,8,250,0.001,50,False,he,0.5147368421052632
-[6],['Activation_Tanh'],[False],0.0002,0.01,0.0001,0.1,32,150,0.05,50,False,xavier,0.5047368421052633
-[3],['Activation_ReLU'],[True],0.001,0.001,1e-06,0.3,16,150,0.0001,20,False,he,0.4836842105263157
-[6],['Activation_Tanh'],[False],1e-05,1e-05,0.01,0.3,32,150,0.05,0,False,he,0.4831578947368421
-[4],['Activation_Leaky_ReLU'],[True],0.0002,0.0001,1e-05,0.3,16,250,0.01,50,False,gaussian,0.4663157894736842
-[6],['Activation_Tanh'],[True],0.0001,1e-05,1e-05,0.1,32,250,0.0001,0,False,random,0.46315789473684205
-[6],['Activation_Leaky_ReLU'],[False],0.001,0.01,1e-05,0.1,8,100,0.01,0,False,he,0.45368421052631575
-[6],['Activation_Sigmoid'],[False],0.0002,0.001,1e-05,0.3,32,150,1e-05,50,False,random,0.42526315789473684
-[6],['Activation_Sigmoid'],[False],0.0002,0.001,0.01,0.1,32,200,0.05,0,False,he,0.4247368421052632
-[4],['Activation_Tanh'],[False],0.0001,0.01,0.01,0.3,16,150,0.0001,20,False,he,0.39526315789473687
+[8],<class 'src.activation_functions.Activation_Leaky_ReLU'>,[False],0.001,1e-06,0.001,0.1,16,300,0.001,50,False,random,0.7925925925925926
+[5],<class 'src.activation_functions.Activation_ReLU'>,[True],0.01,0.01,0.01,0.1,8,300,0.05,30,False,he,0.7037037037037036
+[3],<class 'src.activation_functions.Activation_ReLU'>,[False],0.01,0.001,1e-05,0.3,16,200,0.001,20,False,xavier,0.6814814814814815
+[3],<class 'src.activation_functions.Activation_Leaky_ReLU'>,[False],0.001,0.01,1e-05,0.3,32,300,0.01,50,False,gaussian_scaled,0.6370370370370371
+[6],<class 'src.activation_functions.Activation_Sigmoid'>,[False],0.001,1e-05,1e-06,0.3,8,200,1e-05,30,False,xavier,0.6370370370370371
+[4],<class 'src.activation_functions.Activation_ReLU'>,[False],0.001,0.01,0.0001,0.3,8,150,0.01,50,False,random,0.6370370370370371
+[6],<class 'src.activation_functions.Activation_Leaky_ReLU'>,[False],0.001,0.01,1e-06,0.3,16,100,0.01,50,False,gaussian_scaled,0.6370370370370371
+[4],<class 'src.activation_functions.Activation_Leaky_ReLU'>,[False],0.001,1e-06,0.001,0.3,16,250,0.01,30,False,he,0.637037037037037
+[8],<class 'src.activation_functions.Activation_Tanh'>,[False],0.001,0.0001,0.001,0.3,16,150,1e-05,20,False,random,0.6296296296296295
+[5],<class 'src.activation_functions.Activation_Tanh'>,[False],0.001,1e-05,0.001,0.0,32,250,0.01,20,False,he,0.6148148148148149
+[5],<class 'src.activation_functions.Activation_Leaky_ReLU'>,[False],0.0002,0.01,1e-05,0.3,32,300,0,50,False,xavier,0.6148148148148149
+[5],<class 'src.activation_functions.Activation_ReLU'>,[False],0.0001,1e-05,0.0001,0.1,8,150,0.0001,30,False,xavier,0.6
+[6],<class 'src.activation_functions.Activation_Tanh'>,[False],0.001,1e-05,1e-05,0.1,8,150,0.0001,50,False,he,0.6
+[3],<class 'src.activation_functions.Activation_ReLU'>,[False],0.0002,0.01,1e-06,0.0,8,200,0.05,50,False,xavier,0.6
+[5],<class 'src.activation_functions.Activation_Tanh'>,[True],0.001,0.0001,0.01,0.1,16,200,0.001,30,False,xavier,0.6
+[6],<class 'src.activation_functions.Activation_Sigmoid'>,[False],1e-06,0.001,0.01,0.0,16,250,1e-05,20,False,xavier,0.5925925925925926
+[4],<class 'src.activation_functions.Activation_ReLU'>,[True],0.001,0.01,1e-05,0.1,8,200,0,20,False,he,0.5925925925925926
+[6],<class 'src.activation_functions.Activation_Tanh'>,[True],1e-06,0.001,0.0001,0.0,8,200,0.01,20,False,gaussian,0.5851851851851853
+[5],<class 'src.activation_functions.Activation_ReLU'>,[True],1e-06,0.01,1e-05,0.0,8,150,0,20,False,xavier,0.5777777777777778
+[3],<class 'src.activation_functions.Activation_Leaky_ReLU'>,[False],0.001,0.01,1e-05,0.0,16,250,0.01,30,False,gaussian,0.5777777777777777
+[6],<class 'src.activation_functions.Activation_ReLU'>,[True],0.001,1e-06,0.0001,0.0,8,200,0,20,False,gaussian,0.5703703703703703
+[8],<class 'src.activation_functions.Activation_Sigmoid'>,[False],1e-05,0.0001,0.0001,0.1,16,300,0,30,False,xavier,0.562962962962963
+[8],<class 'src.activation_functions.Activation_Sigmoid'>,[True],1e-06,0.01,1e-06,0.3,8,150,0,0,False,gaussian,0.562962962962963
+[3],<class 'src.activation_functions.Activation_Leaky_ReLU'>,[False],0.0002,1e-06,0.001,0.0,8,100,0.05,30,False,gaussian,0.5481481481481483
+[6],<class 'src.activation_functions.Activation_Tanh'>,[True],1e-05,0.0001,0.01,0.1,8,250,1e-05,0,False,random,0.5481481481481482
+[3],<class 'src.activation_functions.Activation_Tanh'>,[True],0.0001,0.001,0.01,0.0,8,250,0.001,0,False,he,0.5481481481481482
+[4],<class 'src.activation_functions.Activation_Sigmoid'>,[True],0.001,0.0001,1e-05,0.1,16,150,0.0001,50,False,gaussian_scaled,0.5407407407407407
+[3],<class 'src.activation_functions.Activation_Sigmoid'>,[True],0.0001,1e-05,0.01,0.1,32,100,0.001,30,False,xavier,0.5407407407407407
+[6],<class 'src.activation_functions.Activation_Sigmoid'>,[False],1e-06,0.0001,0.0001,0.0,8,250,1e-05,0,False,xavier,0.5407407407407407
+[8],<class 'src.activation_functions.Activation_Leaky_ReLU'>,[True],0.001,0.0001,1e-06,0.1,8,300,0.001,20,False,gaussian,0.5407407407407406
+[8],<class 'src.activation_functions.Activation_Sigmoid'>,[True],0.001,1e-06,0.0001,0.1,32,250,1e-05,50,False,gaussian_scaled,0.5333333333333334
+[6],<class 'src.activation_functions.Activation_Tanh'>,[True],0.0002,1e-06,0.01,0.3,16,250,1e-05,20,False,gaussian,0.5333333333333334
+[6],<class 'src.activation_functions.Activation_Leaky_ReLU'>,[False],1e-06,1e-06,0.0001,0.3,32,250,1e-05,20,False,gaussian,0.5185185185185185
+[5],<class 'src.activation_functions.Activation_Tanh'>,[True],0.0001,0.0001,0.0001,0.1,32,200,0.0001,50,False,he,0.5185185185185185
+[4],<class 'src.activation_functions.Activation_ReLU'>,[False],1e-06,1e-06,1e-06,0.1,16,250,0.05,20,False,gaussian,0.5185185185185185
+[3],<class 'src.activation_functions.Activation_Tanh'>,[False],1e-05,0.001,0.001,0.3,8,300,0.05,30,False,gaussian_scaled,0.5037037037037038
+[6],<class 'src.activation_functions.Activation_Tanh'>,[True],1e-05,0.0001,0.001,0.0,16,150,0.01,30,False,gaussian,0.5037037037037037
+[6],<class 'src.activation_functions.Activation_ReLU'>,[True],0.0002,0.001,0.001,0.0,32,300,0.01,20,False,gaussian_scaled,0.4962962962962963
+[8],<class 'src.activation_functions.Activation_Leaky_ReLU'>,[True],1e-06,0.01,1e-06,0.3,16,250,0.001,0,False,gaussian,0.4962962962962963
+[8],<class 'src.activation_functions.Activation_Leaky_ReLU'>,[True],0.001,0.0001,0.001,0.1,16,300,0.0001,0,False,gaussian,0.4962962962962963
+[5],<class 'src.activation_functions.Activation_Tanh'>,[False],1e-06,1e-06,1e-06,0.3,16,250,0.01,0,False,he,0.4962962962962963
+[4],<class 'src.activation_functions.Activation_Tanh'>,[False],1e-05,1e-06,1e-06,0.3,32,150,0.05,50,False,he,0.4962962962962962
+[5],<class 'src.activation_functions.Activation_Leaky_ReLU'>,[False],0.0001,0.0001,0.0001,0.3,32,250,1e-05,0,False,he,0.4888888888888888
+[4],<class 'src.activation_functions.Activation_Leaky_ReLU'>,[True],0.0002,0.01,0.001,0.0,8,200,0.01,0,False,random,0.47407407407407404
+[8],<class 'src.activation_functions.Activation_Tanh'>,[False],1e-05,1e-06,1e-06,0.1,32,200,1e-05,20,False,xavier,0.45925925925925914
+[4],<class 'src.activation_functions.Activation_Sigmoid'>,[True],0.0002,0.01,1e-06,0.0,8,100,0,0,False,gaussian,0.4518518518518519
+[4],<class 'src.activation_functions.Activation_Sigmoid'>,[True],1e-06,1e-06,0.0001,0.0,32,200,0.001,0,False,gaussian,0.4222222222222222
+[4],<class 'src.activation_functions.Activation_Tanh'>,[True],0.0002,0.01,0.01,0.0,32,100,0.01,20,False,he,0.4148148148148148
+[5],<class 'src.activation_functions.Activation_ReLU'>,[False],0.0001,1e-06,0.001,0.0,16,100,1e-05,0,False,gaussian,0.4
+[3],<class 'src.activation_functions.Activation_Sigmoid'>,[True],1e-06,0.0001,0.0001,0.1,8,300,0.05,0,False,random,0.37037037037037035

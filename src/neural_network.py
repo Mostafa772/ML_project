@@ -22,14 +22,14 @@ class Base_NN:
 
 class NN(Base_NN):
     def __init__(self, l1, l2, input_size, hidden_sizes, output_size,
-                 hidden_activations=None, dropout_rates=None,
+                 hidden_activation=None, dropout_rates=None,
                  use_batch_norm=None, output_activation=Activation_Sigmoid(), weights_init: str = 'gaussian'):
         super().__init__()
         prev_size = input_size
 
         # Default activations to ReLU
-        if hidden_activations is None:
-            hidden_activations = [Activation_ReLU for _ in hidden_sizes]
+        if hidden_activation is None:
+            hidden_activation = Activation_ReLU
 
         # Default dropout rates to 0
         if dropout_rates is None:
@@ -41,9 +41,9 @@ class NN(Base_NN):
         else:
             assert len(use_batch_norm) == len(hidden_sizes), \
                 "use_batch_norm must have the same length as hidden_sizes"
-        print(hidden_sizes, hidden_activations, dropout_rates, use_batch_norm)
+        print(hidden_sizes, hidden_activation, dropout_rates, use_batch_norm)
         # Create hidden layers
-        for size, activation, rate, bn_flag in zip(hidden_sizes, hidden_activations,
+        for size, rate, bn_flag in zip(hidden_sizes,
                                                    dropout_rates, use_batch_norm):
             # Add dense layer
             self.layers.append(Layer_Dense(prev_size, size, l1=l1, l2=l2, weights_init=weights_init))
@@ -53,7 +53,7 @@ class NN(Base_NN):
                 self.layers.append(BatchNormalization())
 
             # Add activation
-            self.layers.append(activation())
+            self.layers.append(hidden_activation())
 
             # Add dropout if rate > 0
             if rate > 0:
