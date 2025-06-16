@@ -15,21 +15,12 @@ class EnsembleNN:
         for i in range(self.n_models):
             print(f"Training model {i+1}/{self.n_models}")
             # Train model using existing train_and_evaluate function
-            model, val_accuracy = train_and_evaluate(
-                learning_rate=hyperparams['learning_rate'],
-                # l1=hyperparams['l1'],
-                # l2=hyperparams['l2'],
-                # dropout_rate=hyperparams['dropout_rate'],
-                batch_size=hyperparams['batch_size'],
-                n_epochs=hyperparams['n_epochs'],
-                weight_decay=hyperparams['weight_decay'],
-                # model=hyperparams['model']
-                # activation=hyperparams['activation']
+            train = Train(hyperparams, model)
+            model, val_accuracy = train.train_and_evaluate(
                 X_train=X_train,
                 y_train=y_train,
                 X_val=X_val,
                 y_val=y_val,
-                model=model,
             )
             self.models.append(model)
             print(f"Model {i+1} validation accuracy: {val_accuracy:.4f}")

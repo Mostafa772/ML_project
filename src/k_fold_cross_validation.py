@@ -1,7 +1,15 @@
 from src.train_and_evaluate import *
 from src.neural_network import NN
 
-def k_fold_cross_validation_manual(X, y, l1, l2, hidden_size, hidden_activation, dropout_rate, use_batch_norm, learning_rate=0.1, n_epochs=150, batch_size=1000, weight_decay=1e-3, k=5, seed=42):
+def k_fold_cross_validation_manual(X, y, hyperparams: dict, k=5, seed=42):
+    assert 'l1' in hyperparams, "K-Fold Cross valid no l1"
+    assert 'l2' in hyperparams, "K-Fold Cross valid no l2"
+    assert 'hidden_size' in hyperparams, "K-Fold Cross valid no hidden_size"
+    assert 'hidden_activation' in hyperparams, "K-Fold Cross valid no hidden_activation"
+    assert 'dropout_rate' in hyperparams, "K-Fold Cross valid no dropout_rate"
+    assert 'batch_norm' in hyperparams, "K-Fold Cross valid no batch_norm"
+    assert 'CC' in hyperparams, "K-Fold Cross valid no CC"
+
     np.random.seed(seed)
     n_samples = len(X)
     indices = np.arange(n_samples)
@@ -21,24 +29,20 @@ def k_fold_cross_validation_manual(X, y, l1, l2, hidden_size, hidden_activation,
         X_train, y_train = X[train_indices], y[train_indices]
         X_val, y_val = X[val_indices], y[val_indices]
 
-        model = NN(
-            l1=l1,
-            l2=l2,
-            input_size=17,
-            hidden_sizes=hidden_size,
-            output_size=1,
-            hidden_activations=hidden_activation,
-            dropout_rates=[dropout_rate],
-            use_batch_norm=use_batch_norm
-        )
+        if hyperparams['CC']:
+            model = CascadeCorrelation(input_size = 17, output_size= 1, activation=Activation_Leaky_ReLU, output_activation = Activation_Sigmoid)
+        else:
+            model = NN(
+                l1=hyperparams['l1'],
+                l2=hyperparams['l2'],
+                input_size=17,
+                hidden_sizes=hyperparams['hidden_size'],
+                output_size=1,
+                hidden_activations=hyperparams['hidden_activation'],
+                dropout_rates=[hyperparams['dropout_rate']],
+                use_batch_norm=hyperparams['batch_norm'],
+            )
 
-        hyperparams = {
-            'learning_rate': learning_rate,
-            'n_epochs': n_epochs,
-            'batch_size': batch_size,
-            'weight_decay': weight_decay
-
-        }
         train = Train(hyperparams, model)
         _, val_acc = train.train_and_evaluate(X_train, y_train, X_val, y_val)
 
