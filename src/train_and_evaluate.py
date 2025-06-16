@@ -6,7 +6,6 @@ from itertools import product
 from src.optimizers import *
 from src.activation_functions import *
 from src.utils import *
-from src.model_regularization import *
 from src.layer import *
 from src.random_search import *
 from src.loss_functions import *

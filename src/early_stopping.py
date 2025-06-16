@@ -1,5 +1,7 @@
 import numpy as np
 
+from activation_functions import Activation
+from ensemble.cascade_correlation import CascadeCorrelation
 
 class EarlyStopping:
     def __init__(self, patience=20, min_delta_loss=0.0, min_delta_accuracy=0.0):
@@ -21,8 +23,9 @@ class EarlyStopping:
         self.best_accuracy = -np.inf  # Track the best validation accuracy
         self.wait = 0  # Counter for epochs without improvement
         self.stop_training = False
+    
 
-    def on_epoch_end(self, current_loss, current_accuracy, model, epoch):
+    def on_epoch_end(self, current_loss: float, current_accuracy: float, model, epoch: int):
         """
         Call this at the end of each epoch to check if training should stop.
 
@@ -33,15 +36,22 @@ class EarlyStopping:
         """
         # Check if loss has improved
         if current_loss < self.best_loss - self.min_delta_loss:
+            self.save_weights(model)
             self.best_loss = current_loss
             self.best_accuracy = current_accuracy
-            
             self.best_epoch = epoch
             self.wait = -1
         
         self.wait += 1
         if self.wait >= self.patience:
             self.stop_training = True
+    
+    def save_weights(self, model):
+        self.best_weights = []
+        for layer in model.layers:
+            if not hasattr(layer, 'weights'):
+                continue
+            self.best_weights.append(layer.weights)
 
     def restore_weights(self, model):
         """
@@ -50,44 +60,17 @@ class EarlyStopping:
         Parameters:
         - model: The model to restore the weights to.
         """
-        if self.best_weights is not None:
-            for layer, weights in zip(model.layers, self.best_weights):
-                layer.weights = weights
+        if self.best_weights is None:
+            print("Weights not restored")
+            return
+
+        if isinstance(model, CascadeCorrelation) and len(self.best_weights) != len(model.layers)/2:
+            print("Weights cannot be restored, network size changed")
+            return
+
+        for layer, weights in zip(model.layers, self.best_weights):
+            if not hasattr(layer, 'weights'):
+                continue
+            layer.weights = weights
                 
                 
-                
-class Dropout:
-    def __init__(self, rate):
-        """
-        Initialize a dropout layer.
-        
-        Parameters:
-        - rate: Dropout rate (fraction of inputs to drop)
-        """
-        self.rate = 1 - rate  # Store keep rate instead of drop rate
-        self.mask = None
-        
-    def forward(self, inputs, training=True):
-        """
-        Perform the forward pass with dropout.
-        
-        Parameters:
-        - inputs: Input data
-        - training: Boolean indicating training mode
-        """
-        self.inputs = inputs
-        
-        if training:
-            self.mask = np.random.binomial(1, self.rate, size=inputs.shape) / self.rate
-            self.output = inputs * self.mask
-        else:
-            self.output = inputs
-            
-    def backward(self, dvalues):
-        """
-        Perform the backward pass through dropout.
-        
-        Parameters:
-        - dvalues: Gradient of the loss with respect to the output
-        """
-        self.dinputs = dvalues * self.mask
