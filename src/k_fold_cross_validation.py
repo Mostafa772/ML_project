@@ -1,9 +1,17 @@
-from train_and_evaluate import *
+from src.train_and_evaluate import *
 
 
 def k_fold_cross_validation_manual(X, y, l1, l2, hidden_size, hidden_activation, dropout_rate,
                                    use_batch_norm, learning_rate=0.1, n_epochs=150, batch_size=1000,
-                                   weight_decay=1e-3, patience=10, k=5, seed=42):
+                                   weight_decay=1e-3, patience=10, k=5, seed=42, regression=False):
+    
+    # print("regression k-fold: ", regression, " y shape: ", y.shape)
+    if regression:
+        input_size = 12
+        output_size = 3
+    else:
+        input_size = 17
+        output_size = 1
     np.random.seed(seed)
     n_samples = len(X)
     indices = np.arange(n_samples)
@@ -22,13 +30,12 @@ def k_fold_cross_validation_manual(X, y, l1, l2, hidden_size, hidden_activation,
 
         X_train, y_train = X[train_indices], y[train_indices]
         X_val, y_val = X[val_indices], y[val_indices]
-
         model = NN(
             l1=l1,
             l2=l2,
-            input_size=17,
+            input_size=input_size,
             hidden_sizes=hidden_size,
-            output_size=1,
+            output_size=output_size,
             hidden_activations=hidden_activation,
             dropout_rates=[dropout_rate],
             use_batch_norm=use_batch_norm
@@ -38,7 +45,7 @@ def k_fold_cross_validation_manual(X, y, l1, l2, hidden_size, hidden_activation,
                                         learning_rate=learning_rate,
                                         n_epochs=n_epochs, batch_size=batch_size,
                                         weight_decay=weight_decay, patience=patience,
-                                        model=model)
+                                        model=model, regression=regression)
 
         val_accuracies.append(val_acc)
         print(f"✅ Fold {fold+1}/{k} | Validation Accuracy: {val_acc:.4f}")

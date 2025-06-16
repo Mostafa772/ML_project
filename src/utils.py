@@ -8,43 +8,51 @@ import numpy as np
 import pandas as pd
 
 
-def normalize(data, type="minmax"):
-    data_normalized = data.copy()
-    # Select numeric columns only for normalization
-    numeric_data = data_normalized.select_dtypes(include=["float64", "int64"])
-    if type=="minmax":
-        # Calculate min and max from the training data
-        min_vals = numeric_data.min()
-        max_vals = numeric_data.max()
+def normalize(data, type="minmax", params=None):
+    # Ensure input is a DataFrame
+    data = pd.DataFrame(data)
+    
+    # Separate numeric and non-numeric columns
+    numeric_data = data.select_dtypes(include=["float64", "int64", "float32", "int32"])
+    non_numeric_data = data.select_dtypes(exclude=["float64", "int64", "float32", "int32"])
 
-        # Normalize each numeric column separately using the min-max formula
+    if numeric_data.empty:
+        raise ValueError("No numeric columns found to normalize.")
+
+    if type == "minmax":
+        if params is None:
+            min_vals = numeric_data.min()
+            max_vals = numeric_data.max()
+        else:
+            min_vals, max_vals = params
         normalized_data = (numeric_data - min_vals) / (max_vals - min_vals)
+        scaler_params = (min_vals, max_vals)
 
-    if type=="zscore" or type=="z-score":
-        means = numeric_data.mean(axis=0)
-        stds = numeric_data.std(axis=0)
-        # Avoid division by zero for constant columns
-        # stds_replaced = stds.replace(0, 1)
-        # Apply Z-score normalization
+    elif type in ("zscore", "z-score"):
+        if params is None:
+            means = numeric_data.mean()
+            stds = numeric_data.std()
+        else:
+            means, stds = params
         normalized_data = (numeric_data - means) / stds
-    
-    
-    # Rejoin with non-numeric columns if needed
-    non_numeric_data = data.select_dtypes(exclude=["float64", "int64"])
-    final_data = pd.concat([non_numeric_data, normalized_data], axis=1)
+        scaler_params = (means, stds)
 
-    return final_data
+    else:
+        raise ValueError(f"Unknown normalization type: {type}")
+
+    if not non_numeric_data.empty:
+        final_data = pd.concat([non_numeric_data.reset_index(drop=True), normalized_data.reset_index(drop=True)], axis=1)
+    else:
+        final_data = normalized_data
+
+    return final_data, scaler_params
     
     
 def create_batches(X, y, batch_size):
-    """Create mini-batches from the data"""
-    # Convert to numpy array if input is pandas DataFrame/Series
-    # if isinstance(X, pd.DataFrame):
-    #     X = X.values
-    # if isinstance(y, pd.Series):
-    #     y = y.values
+    """Create mini-batches from the data (supports multi-output y)"""
     X = np.array(X)
-    y = np.array(y).reshape(-1, 1)
+    y = np.array(y)  # Don't reshape — keep the original shape
+
     n_samples = X.shape[0]
     indices = np.arange(n_samples)
     np.random.shuffle(indices)
@@ -52,11 +60,6 @@ def create_batches(X, y, batch_size):
     for start_idx in range(0, n_samples, batch_size):
         end_idx = min(start_idx + batch_size, n_samples)
         batch_indices = indices[start_idx:end_idx]
-        # if y.shape[1] == 1: # ****changed something****
-        #     yield X[batch_indices], y[batch_indices]
-        # else:
-        #     # yield X[batch_indices], y.iloc[batch_indices] # ****changed something****
-        #     yield X[batch_indices], y[batch_indices]
         yield X[batch_indices], y[batch_indices]
  
 
@@ -167,11 +170,18 @@ def train_val_split(X, y, val_ratio=0.2, seed=42, shuffle=True):
     - X_train, X_val, y_train, y_val
     """
     
-    
     assert len(X) == len(y), "X and y must have the same number of samples"
+    
     if not isinstance(X, np.ndarray):
         X = np.array(X)
-        y = np.array(y).reshape(-1, 1)
+    
+    if not isinstance(y, np.ndarray):
+        y = np.array(y)
+
+    # Only reshape if y is 1D (single target)
+    if y.ndim == 1:
+        y = y.reshape(-1, 1)
+
     n_samples = len(X)
     n_val = int(n_samples * val_ratio)
 
@@ -230,4 +240,62 @@ def train_test_split(data, target=None, train_percent=80):
     y_test = test_data[target]
     
     return X_train, X_test, y_train, y_test
-    
+
+def preprocess_data(data, target=None, normalize_type="z-score", val_ratio=0.2, regression=False):
+    """
+    If regression=True:
+        - Assumes `data` is a DataFrame with input features + target columns.
+        - Automatically extracts and normalizes features and targets.
+        - Returns: X_train, X_val, y_train, y_val, X_scaler_params, y_scaler_params
+
+    If regression=False:
+        - Returns the shuffled/split version of data.
+        - If target is provided, also splits target columns.
+    """
+    # Shuffle the data
+    data = data.sample(frac=1, random_state=42).reset_index(drop=True)
+
+    if regression:
+        assert target is not None, "`target` must be specified when regression=True"
+
+        # Ensure target is always a list of columns
+        target = [target] if isinstance(target, str) else target
+        
+        # Split features and targets
+        y = data[target]
+        X = data.drop(columns=target)
+        # print(y)
+        # Normalize X
+        X_normalized, X_scaler_params = normalize(X, type=normalize_type)
+
+        # Split into train/val
+        X_train, X_val, y_train, y_val = train_val_split(X_normalized, y, val_ratio=val_ratio)
+        X_train, X_val, y_train, y_val = map(pd.DataFrame, (X_train, X_val, y_train, y_val))
+        print(y_val, y_train)
+        # Normalize y (with shared parameters)
+        y_train_normalized, y_scaler_params = normalize(y_train, type=normalize_type)
+        y_val_normalized, _ = normalize(y_val, type=normalize_type, params=y_scaler_params)
+
+        return (
+            np.array(X_train),
+            np.array(X_val),
+            np.array(y_train_normalized),
+            np.array(y_val_normalized),
+            X_scaler_params,
+            y_scaler_params
+        )
+
+    else:
+        if target is None:
+            # Just split the DataFrame
+            split_index = int(len(data) * (1 - val_ratio))
+            return data[:split_index], data[split_index:]
+        else:
+            target = [target] if isinstance(target, str) else target
+            X = data.drop(columns=target)
+            y = data[target]
+            split_index = int(len(data) * (1 - val_ratio))
+            return (
+                X[:split_index], X[split_index:],
+                y[:split_index], y[split_index:]
+            )

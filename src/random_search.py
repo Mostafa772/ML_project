@@ -6,26 +6,7 @@ from neural_network import *
 from train_and_evaluate import *
 
 
-# # Random search for finding the best hyperparameters
-
-
-# param_distributions = {
-#     'hidden_size': [[3], [4], [5], [6]],
-#     'hidden_activation': [[Activation_Tanh], [Activation_Leaky_ReLU], [Activation_Sigmoid], [Activation_ReLU]],
-#     'batch_norm': [[True], [False]],
-#     'learning_rate': [1e-4, 1e-3, 1e-2, 1e-1],
-#     'l1': [0.0, 1e-5, 1e-4, 1e-3, 1e-2],
-#     'l2': [0.0, 1e-5, 1e-4, 1e-3, 1e-2],
-#     'dropout_rate': [0.0, 0.1, 0.3],
-#     'batch_size': [1000],
-#     'n_epochs': [150, 200],
-#     'weight_decay': list(np.arange(0.0, 0.05, 0.01)),
-#     'patience': [5, 10, 15]
-# }
-
-
-
-def random_search(X_train, y_train, param_distributions, n_iters, csv_path="top_5_results.csv"):
+def random_search(X_train, y_train, param_distributions, n_iters, csv_path="top_5_results.csv", regression=False):
     results = []
 
     for _ in range(n_iters):
@@ -55,7 +36,7 @@ def random_search(X_train, y_train, param_distributions, n_iters, csv_path="top_
                                     batch_size=params["batch_size"],
                                     weight_decay=params["weight_decay"],
                                     patience=params["patience"],
-                                    k=5, seed=42)
+                                    k=5, seed=42, regression=regression)
 
         # Save the result
         result = params.copy()
