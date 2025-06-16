@@ -18,10 +18,10 @@ class Train:
     def __init__(self, hyperparameters: dict[str, float | int], model: Base_NN):
         self.hp = hyperparameters
         self.loss_function = MSE()
-        self.train_losses = []
-        self.train_accuracies = []
-        self.val_losses = []
-        self.val_accuracies = []
+        self.train_losses = np.array([])
+        self.train_accuracies = np.array([])
+        self.val_losses = np.array([])
+        self.val_accuracies = np.array([])
         self.test_loss = None
         self.test_accuracy = None
         self.model = model
@@ -38,6 +38,7 @@ class Train:
         optimizer = Optimizer_Adam(learning_rate=self.hp['learning_rate'], decay=self.hp['weight_decay'])
 
         # Initialize early stopping
+        assert isinstance(self.hp['patience'], int)
         early_stopping = EarlyStopping(patience=self.hp['patience'], min_delta_loss=1e-5, min_delta_accuracy=0.001)
 
         # Before training loop:
@@ -46,6 +47,7 @@ class Train:
         print(f"Hyperparams: {self.hp}")
 
         # Training loop
+        assert isinstance(self.hp['n_epochs'], int)
         for epoch in range(self.hp['n_epochs']):
             batch_losses = []
             batch_accuracies = []

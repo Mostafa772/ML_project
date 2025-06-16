@@ -1,5 +1,10 @@
-from src.train_and_evaluate import *
+import numpy as np
+
 from src.neural_network import NN
+from src.ensemble.cascade_correlation import CascadeCorrelation
+from src.activation_functions import *
+from src.train_and_evaluate import Train
+
 
 def k_fold_cross_validation_manual(X, y, hyperparams: dict, k=5, seed=42):
     assert 'l1' in hyperparams, "K-Fold Cross valid no l1"
@@ -30,7 +35,7 @@ def k_fold_cross_validation_manual(X, y, hyperparams: dict, k=5, seed=42):
         X_val, y_val = X[val_indices], y[val_indices]
 
         if hyperparams['CC']:
-            model = CascadeCorrelation(input_size = 17, output_size= 1, activation=Activation_Leaky_ReLU, output_activation = Activation_Sigmoid)
+            model = CascadeCorrelation(input_size = 17, output_size= 1, activation=hyperparams['hidden_activation'][0], output_activation = Activation_Sigmoid)
         else:
             model = NN(
                 l1=hyperparams['l1'],
@@ -41,6 +46,7 @@ def k_fold_cross_validation_manual(X, y, hyperparams: dict, k=5, seed=42):
                 hidden_activations=hyperparams['hidden_activation'],
                 dropout_rates=[hyperparams['dropout_rate']],
                 use_batch_norm=hyperparams['batch_norm'],
+                weights_init=hyperparams['weights_init']
             )
 
         train = Train(hyperparams, model)

@@ -1,5 +1,3 @@
-import random
-
 import numpy as np
 import pandas as pd
 
@@ -25,13 +23,13 @@ class Base_NN:
 class NN(Base_NN):
     def __init__(self, l1, l2, input_size, hidden_sizes, output_size,
                  hidden_activations=None, dropout_rates=None,
-                 use_batch_norm=None, output_activation=Activation_Sigmoid()):
+                 use_batch_norm=None, output_activation=Activation_Sigmoid(), weights_init: str = 'gaussian'):
         super().__init__()
         prev_size = input_size
 
         # Default activations to ReLU
         if hidden_activations is None:
-            hidden_activations = [Activation_ReLU() for _ in hidden_sizes]
+            hidden_activations = [Activation_ReLU for _ in hidden_sizes]
 
         # Default dropout rates to 0
         if dropout_rates is None:
@@ -48,7 +46,7 @@ class NN(Base_NN):
         for size, activation, rate, bn_flag in zip(hidden_sizes, hidden_activations,
                                                    dropout_rates, use_batch_norm):
             # Add dense layer
-            self.layers.append(Layer_Dense(prev_size, size, l1=l1, l2=l2))
+            self.layers.append(Layer_Dense(prev_size, size, l1=l1, l2=l2, weights_init=weights_init))
 
             # Add batch normalization if specified
             if bn_flag:

@@ -4,6 +4,9 @@ from activation_functions import Activation_Softmax
 
 
 class Loss:
+    def forward(self, y_pred, y_true):
+        raise NotImplementedError
+
     def calculate(self, output, y):
         sample_losses = self.forward(output, y)
         data_loss = np.mean(sample_losses)
@@ -49,9 +52,9 @@ class Activation_Softmax_Loss_CategoricalCrossentropy(Loss):
         self.loss = Loss_CategoricalCrossentropy()
 
 
-    def forward(self, inputs, y_true):
+    def forward(self, y_pred, y_true):
         # Output layer's activation function
-        self.activation.forward(inputs)
+        self.activation.forward(y_pred)
 
         # Set the output
         self.output = self.activation.output
