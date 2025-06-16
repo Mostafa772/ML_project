@@ -139,7 +139,7 @@ class Train:
         print(f"Final Validation Accuracy: {self.val_accuracies[-1]:.4f}")
         return self.model, self.val_accuracies[-1]
     
-    def test(self, X_test, y_test):
+    def test(self, X_test, y_test) -> tuple[float, float]:
         self.model.forward(X_test, training=False)
         self.test_loss = self.loss_function.forward(self.model.output.squeeze(), y_test)
 
@@ -147,6 +147,7 @@ class Train:
         y_true = np.argmax(y_test, axis=1) if y_test.ndim > 1 else y_test
         self.test_accuracy = np.mean(predictions == y_true)
         print(f"Test Accuracy: {self.test_accuracy:.4f}")
+        return self.test_loss, self.test_accuracy
 
     def plot(self, accuracy=False):
          # Plot training progress
