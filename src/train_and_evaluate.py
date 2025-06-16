@@ -1,180 +1,162 @@
-import numpy as np
 import random
-import pandas as pd
-from src.neural_network import *
 from itertools import product
-from src.optimizers import *
+
+import numpy as np
+import pandas as pd
+
 from src.activation_functions import *
+from src.early_stopping import EarlyStopping
+from src.layer import Layer_Dense
+from src.loss_functions import *
+from src.neural_network import Base_NN
+from src.ensemble.cascade_correlation import CascadeCorrelation
+from src.optimizers import *
 from src.utils import *
-from src.layer import *
-from src.random_search import *
-from src.loss_functions import *
-from src.data_preprocessing import *
-from src.loss_functions import *
 
 
-def train_and_evaluate(X_train, y_train, X_val, y_val, learning_rate, n_epochs, batch_size, weight_decay, model):
-    # Initialize components
-    loss_function = MSE()
-    optimizer = Optimizer_Adam(learning_rate=learning_rate, decay=weight_decay)
+class Train:
+    def __init__(self, hyperparameters: dict[str, float | int], model: Base_NN):
+        self.hp = hyperparameters
+        self.loss_function = MSE()
+        self.train_losses = []
+        self.train_accuracies = []
+        self.val_losses = []
+        self.val_accuracies = []
+        self.test_loss = None
+        self.test_accuracy = None
+        self.model = model
 
-    train_losses = []
-    train_accuracies = []
-    val_losses = []
-    val_accuracies = []
-
-    for epoch in range(n_epochs):
-        batch_losses = []
-        batch_accuracies = []
-
-        for X_batch, y_batch in create_batches(X_train, y_train, batch_size):
-            # Forward pass through model
-            model.forward(X_batch, training=True)
-            # Calculate loss through separate loss activation
-            loss = loss_function.forward(model.output, y_batch)
-            # Calculate accuracy
-            predictions = np.round(model.output.squeeze())
-            accuracy = np.mean(predictions == y_batch)
-
-            # Backward pass
-            loss_function.backward(model.output, y_batch)
-            dvalues = loss_function.dinputs
-            
-            # Propagate gradients through model layers in reverse
-            for layer in reversed(model.layers):
-                layer.backward(dvalues)
-                dvalues = layer.dinputs
-                
-                # Apply L1/L2 regularization to dense layers
-                if isinstance(layer, Layer_Dense):
-                    if layer.l1 > 0:
-                        layer.dweights += layer.l1 * np.sign(layer.weights)
-                    if layer.l2 > 0:
-                        layer.dweights += 2 * layer.l2 * layer.weights
-            
-            # Update parameters
-            optimizer.pre_update_params()
-            for layer in model.layers:
-                if isinstance(layer, Layer_Dense):
-                    optimizer.update_params(layer)
-            optimizer.post_update_params()
-            
-            batch_losses.append(loss)
-            batch_accuracies.append(accuracy)
-
-        # Epoch metrics
-        epoch_loss = np.mean(batch_losses)
-        epoch_accuracy = np.mean(batch_accuracies)
-        train_losses.append(epoch_loss)
-        train_accuracies.append(epoch_accuracy)
+    def train_and_evaluate(self, X_train, y_train, X_val, y_val):
+        self.train_losses = []
+        self.train_accuracies = []
+        self.val_losses = []
+        self.val_accuracies = []
         
-        # Validation
-        X_val_input = X_val.values if isinstance(X_val, pd.DataFrame) else X_val
-        y_val_input = y_val.values if isinstance(y_val, (pd.Series, pd.DataFrame)) else y_val
+        X_val = X_val.values if isinstance(X_val, pd.DataFrame) else X_val
+        y_val = y_val.values if isinstance(y_val, (pd.Series, pd.DataFrame)) else y_val
 
-        model.forward(X_val_input, training=False)
-        val_loss = loss_function.forward(model.output, y_val_input)
-        val_predictions = np.round(model.output.squeeze())
-        val_accuracy = np.mean(val_predictions == y_val.squeeze())
+        optimizer = Optimizer_Adam(learning_rate=self.hp['learning_rate'], decay=self.hp['weight_decay'])
 
-        val_losses.append(val_loss)
-        val_accuracies.append(val_accuracy)
+        # Initialize early stopping
+        early_stopping = EarlyStopping(patience=self.hp['patience'], min_delta_loss=1e-5, min_delta_accuracy=0.001)
 
-        # if epoch % 10 == 0:
-        #     print(f"Epoch {epoch}: ", end="")
-        #     print(f"Train Loss: {epoch_loss:.4f}, Acc: {epoch_accuracy*100:.2f}% | ", end="")
-        #     print(f"Val Loss: {val_loss:.4f}, Acc: {val_accuracy*100:.2f}%")
+        # Before training loop:
+        print("Data shapes:")
+        print(f"X_train: {X_train.shape}, y_train: {y_train.shape}")
+        print(f"Hyperparams: {self.hp}")
 
-    return model, val_accuracies[-1]
+        # Training loop
+        for epoch in range(self.hp['n_epochs']):
+            batch_losses = []
+            batch_accuracies = []
 
-# def train_and_evaluate(X_train, y_train, X_val, y_val,
-#                        learning_rate, n_epochs, batch_size, weight_decay,
-#                        model, l1=0.0, l2=0.0, dropout_rate=0.0,
-#                        hidden_activation=None, use_batch_norm=False,
-#                        early_stopping=None, verbose=False):
-#     """
-#     Train the model and return the trained model along with validation accuracy.
-#     Supports dropout, batch norm, L1/L2 regularization, early stopping, and custom activation.
-#     """
+            for X_batch, y_batch in create_batches(X_train, y_train, self.hp['batch_size']):
+                # Forward pass
+                self.model.forward(X_batch, training=True)
 
-#     loss_function = MSE()
-#     optimizer = Optimizer_Adam(learning_rate=learning_rate, decay=weight_decay)
+                # Loss and accuracy
+                loss = self.loss_function.forward(self.model.output, y_batch)
+                predictions = np.round(self.model.output.squeeze())
+                accuracy = np.mean(predictions == y_batch.squeeze())
 
-#     train_losses = []
-#     train_accuracies = []
-#     val_losses = []
-#     val_accuracies = []
+                # Backward pass
+                self.loss_function.backward(self.model.output, y_batch)
+                dvalues = self.loss_function.dinputs
 
-#     for epoch in range(n_epochs):
-#         batch_losses = []
-#         batch_accuracies = []
+                assert dvalues.shape == self.model.output.shape, \
+                    f"Gradient shape mismatch: {dvalues.shape} vs {self.model.output.shape}"
+                
+                i = 0
+                for layer in reversed(self.model.layers):
+                    i =- 1
+                    layer.backward(dvalues)
+                    dvalues = np.array(layer.dinputs)
 
-#         for X_batch, y_batch in create_batches(X_train, y_train, batch_size):
-#             model.forward(X_batch, training=True)
+                    # Regularization
+                    if isinstance(layer, Layer_Dense):
+                        if layer.l1 > 0:
+                            layer.dweights += layer.l1 * np.sign(layer.weights)
+                        if layer.l2 > 0:
+                            layer.dweights += 2 * layer.l2 * layer.weights
 
-#             loss = loss_function.forward(model.output, y_batch)
-#             predictions = np.round(model.output.squeeze())
-#             accuracy = np.mean(predictions == y_batch)
+                # Update weights
+                optimizer.pre_update_params()
+                for layer in self.model.layers:
+                    if isinstance(layer, Layer_Dense):
+                        optimizer.update_params(layer)
+                optimizer.post_update_params()
 
-#             loss_function.backward(model.output, y_batch)
-#             dvalues = loss_function.dinputs
+                batch_losses.append(loss)
+                batch_accuracies.append(accuracy)
 
-#             # Backpropagation through model
-#             for layer in reversed(model.layers):
-#                 layer.backward(dvalues)
-#                 dvalues = layer.dinputs
+            # Epoch summary
+            epoch_loss = np.mean(batch_losses)
+            epoch_acc = np.mean(batch_accuracies)
+            self.train_losses.append(epoch_loss)
+            self.train_accuracies.append(epoch_acc)
 
-#                 if isinstance(layer, Layer_Dense):
-#                     if l1 > 0:
-#                         layer.dweights += l1 * np.sign(layer.weights)
-#                     if l2 > 0:
-#                         layer.dweights += 2 * l2 * layer.weights
+            
+            # Validation
+            self.model.forward(X_val, training=False)
+            val_loss = self.loss_function.forward(self.model.output, y_val)
+            val_predictions = np.round(self.model.output.squeeze())
+            val_accuracy = np.mean(val_predictions == y_val.squeeze())
 
-#             # Weight update
-#             optimizer.pre_update_params()
-#             for layer in model.layers:
-#                 if isinstance(layer, Layer_Dense):
-#                     optimizer.update_params(layer)
-#             optimizer.post_update_params()
+            self.val_losses.append(val_loss)
+            self.val_accuracies.append(val_accuracy)
 
-#             batch_losses.append(loss)
-#             batch_accuracies.append(accuracy)
+            if epoch % 10 == 0:
+                print(f"Epoch {epoch}: ", end="")
+                print(f"Train Loss: {epoch_loss:.4f}, Acc: {epoch_acc*100:.2f}% | ", end="")
+                print(f"Val Loss: {val_loss:.4f}, Acc: {val_accuracy*100:.2f}%")
 
-#         # Epoch statistics
-#         epoch_loss = np.mean(batch_losses)
-#         epoch_accuracy = np.mean(batch_accuracies)
-#         train_losses.append(epoch_loss)
-#         train_accuracies.append(epoch_accuracy)
+            # Early stopping check
+            early_stopping.on_epoch_end(
+                current_loss=val_loss,
+                current_accuracy=val_accuracy,
+                model=self.model,
+                epoch=epoch
+            )
 
-#         # Validation step
-#         X_val_input = X_val.values if isinstance(
-#             X_val, pd.DataFrame) else X_val
-#         y_val_input = y_val.values if isinstance(
-#             y_val, (pd.Series, pd.DataFrame)) else y_val
+            if early_stopping.stop_training:
+                print(f"Early stopping at epoch {epoch}")
+                # Restore best weights
+                print(f"Restoring model weights from epoch {early_stopping.best_epoch}")
+                early_stopping.restore_weights(self.model)
+                # Cascade correlation
+                if isinstance(self.model, CascadeCorrelation):
+                    if self.model.is_limit_reached():
+                        break
+                    
+                    self.model.add_neuron()
+                    early_stopping.wait = 0
+                    early_stopping.patience -= int(early_stopping.patience / 10)
+                    early_stopping.stop_training = False
+                    print(f"Added new neuron at epoch {epoch} wiht val_loss {self.val_losses[-1]:.4f}")
+                    continue
+                break
 
-#         model.forward(X_val_input, training=False)
-#         val_loss = loss_function.forward(model.output, y_val_input)
-#         val_predictions = np.round(model.output.squeeze())
-#         val_accuracy = np.mean(val_predictions == y_val.squeeze())
+        print(f"Final Validation Accuracy: {self.val_accuracies[-1]:.4f}")
+        return self.model, self.val_accuracies[-1]
+    
+    def test(self, X_test, y_test):
+        self.model.forward(X_test, training=False)
+        self.test_loss = self.loss_function.forward(self.model.output.squeeze(), y_test)
 
-#         val_losses.append(val_loss)
-#         val_accuracies.append(val_accuracy)
+        predictions = np.round(self.model.output.squeeze())
+        y_true = np.argmax(y_test, axis=1) if y_test.ndim > 1 else y_test
+        self.test_accuracy = np.mean(predictions == y_true)
+        print(f"Test Accuracy: {self.test_accuracy:.4f}")
 
-#         # Optional: Logging
-#         if verbose and epoch % 10 == 0:
-#             print(f"Epoch {epoch}: Train Loss = {epoch_loss:.4f}, Acc = {epoch_accuracy*100:.2f}%, "
-#                   f"Val Loss = {val_loss:.4f}, Acc = {val_accuracy*100:.2f}%")
+    def plot(self, accuracy=False):
+         # Plot training progress
+        plot_losses(self.train_losses, self.val_losses, self.test_loss,
+                    label1="Training Loss", label2="Validation Loss",
+                    title="Loss Over Epochs")
 
-#         # Optional: Early stopping
-#         if early_stopping:
-#             early_stopping.on_epoch_end(val_loss, val_accuracy, model, epoch)
-#             if early_stopping.stop_training:
-#                 if verbose:
-#                     print(f"Early stopping at epoch {epoch}")
-#                 break
-
-#     # Optional: Restore best weights
-#     if early_stopping and early_stopping.best_weights:
-#         early_stopping.restore_weights(model)
-
-#     return model, val_accuracies[-1] if val_accuracies else 0.0
+        if accuracy:
+            plot_accuracies(self.train_accuracies, self.val_accuracies, self.test_accuracy,
+                        label1="Training Accuracies", label2="Validation Accuracies",
+                        title="Accuracy Over Epochs")
+    
+    

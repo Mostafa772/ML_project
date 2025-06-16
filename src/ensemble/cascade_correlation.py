@@ -80,9 +80,9 @@ class CascadeCorrelationLayer(Layer_Dense):
 
     def backward(self, dvalues: np.ndarray):
         if self.is_frozen:
-            self.dinputs = 0
-            self.dweights = 0
-            self.dbiases = 0
+            self.dinputs = np.array(0)
+            self.dweights = np.array(0)
+            self.dbiases = np.array(0)
             return np.zeros_like((dvalues.shape[0], self.weights.shape[0]))
         
         dvalues = dvalues[:, :self.weights.shape[1]]
