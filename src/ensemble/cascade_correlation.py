@@ -55,7 +55,6 @@ class CascadeCorrelationLayer(Layer_Dense):
         self.is_output = is_output
 
     def add_input_connection(self):
-        prev = self.weights.shape
         scale = np.sqrt(2 / (self.weights.shape[0] + 1)) / 10
         new_weights = np.random.randn(1, 1) * scale
 

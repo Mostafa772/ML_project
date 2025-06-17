@@ -6,7 +6,7 @@ from src.activation_functions import *
 from src.train_and_evaluate import Train
 
 
-def k_fold_cross_validation_manual(X, y, hyperparams: dict, k=5, seed=42, regression=False):
+def k_fold_cross_validation_manual(X, y, hyperparams: dict, k=5, seed=0, regression=False):
     assert 'l1' in hyperparams, "K-Fold Cross valid no l1"
     assert 'l2' in hyperparams, "K-Fold Cross valid no l2"
     assert 'hidden_size' in hyperparams, "K-Fold Cross valid no hidden_size"

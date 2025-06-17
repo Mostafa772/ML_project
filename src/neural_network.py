@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 from src.activation_functions import *
 from src.batch_normalization import *
