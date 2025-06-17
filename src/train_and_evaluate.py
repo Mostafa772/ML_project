@@ -154,9 +154,13 @@ class Train:
         self.model.forward(X_test, training=False)
         self.test_loss = self.loss_function.forward(self.model.output.squeeze(), y_test)
 
-        predictions = np.round(self.model.output.squeeze())
-        y_true = np.argmax(y_test, axis=1) if y_test.ndim > 1 else y_test
-        self.test_score = np.mean(predictions == y_true)
+        if not self.regression:
+            predictions = np.round(self.model.output.squeeze())
+            y_true = np.argmax(y_test, axis=1) if y_test.ndim > 1 else y_test
+            self.test_score = np.mean(predictions == y_true.squeeze())
+        else:
+            self.test_score = r2_score_global(y_test,self.model.output)
+
         print(f"Test score: {self.test_score:.4f}")
         return self.test_loss, self.test_score
 

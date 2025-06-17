@@ -21,45 +21,31 @@ class Base_NN:
         return self.output
 
 class NN(Base_NN):
-    def __init__(self, l1, l2, input_size, hidden_sizes, output_size,
-                 hidden_activation=None, dropout_rates=None,
-                 use_batch_norm=None, output_activation=Activation_Sigmoid(), weights_init: str = 'gaussian'):
+    def __init__(self, l1, l2, input_size, hidden_size, output_size,
+                 hidden_activation=Activation_ReLU, dropout_rate=0.0,
+                 use_batch_norm=False, output_activation=Activation_Sigmoid(), weights_init: str = 'gaussian', n_h_layers = 1):
         super().__init__()
         prev_size = input_size
 
-        # Default activations to ReLU
-        if hidden_activation is None:
-            hidden_activation = Activation_ReLU
-
-        # Default dropout rates to 0
-        if dropout_rates is None:
-            dropout_rates = [0.0] * len(hidden_sizes)
-
-        # Default batch_norm to False for all layers
-        if use_batch_norm is None:
-            use_batch_norm = [False] * len(hidden_sizes)
-        else:
-            assert len(use_batch_norm) == len(hidden_sizes), \
-                "use_batch_norm must have the same length as hidden_sizes"
-        print(hidden_sizes, hidden_activation, dropout_rates, use_batch_norm)
+        print(hidden_size, hidden_activation, dropout_rate, use_batch_norm)
         # Create hidden layers
-        for size, rate, bn_flag in zip(hidden_sizes,
-                                                   dropout_rates, use_batch_norm):
+
+        for _ in range(n_h_layers):
             # Add dense layer
-            self.layers.append(Layer_Dense(prev_size, size, l1=l1, l2=l2, weights_init=weights_init))
+            self.layers.append(Layer_Dense(prev_size, hidden_size, l1=l1, l2=l2, weights_init=weights_init))
 
             # Add batch normalization if specified
-            if bn_flag:
+            if use_batch_norm:
                 self.layers.append(BatchNormalization())
 
             # Add activation
             self.layers.append(hidden_activation())
 
             # Add dropout if rate > 0
-            if rate > 0:
-                self.layers.append(Dropout(rate))
+            if dropout_rate > 0:
+                self.layers.append(Dropout(dropout_rate))
 
-            prev_size = size
+            prev_size = hidden_size
 
         # Output layer
         # initialize the output layer with the same weight initialization method as the hidden layers

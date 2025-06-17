@@ -52,12 +52,13 @@ def k_fold_cross_validation_manual(X, y, hyperparams: dict, k=5, seed=42, regres
                 l1=hyperparams['l1'],
                 l2=hyperparams['l2'],
                 input_size=input_size,
-                hidden_sizes=hyperparams['hidden_size'],
+                hidden_size=hyperparams['hidden_size'],
                 output_size=output_size,
                 hidden_activation=hyperparams['hidden_activation'],
-                dropout_rates=[hyperparams['dropout_rate']],
+                dropout_rate=hyperparams['dropout_rate'],
                 use_batch_norm=hyperparams['batch_norm'],
-                weights_init=hyperparams['weights_init']
+                weights_init=hyperparams['weights_init'],
+                n_h_layers=hyperparams['n_h_layers']
             )
 
         train = Train(hyperparams, model, regression)
