@@ -1,4 +1,5 @@
 from train_and_evaluate import *
+from neural_network import *
 
 
 def k_fold_cross_validation_manual(X, y, l1, l2, hidden_size, hidden_activation, dropout_rate,
