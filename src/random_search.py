@@ -6,7 +6,7 @@ from neural_network import *
 from train_and_evaluate import *
 
 
-def random_search(X_train, y_train, param_distributions, n_iters, csv_path="top_5_results.csv"):
+def random_search(X_train, y_train, param_distributions, n_iters, csv_path="top_5_results.csv", regression=False):
     results = []
 
     for _ in range(n_iters):
@@ -16,7 +16,7 @@ def random_search(X_train, y_train, param_distributions, n_iters, csv_path="top_
         }
 
         # Train and evaluate the model
-        _, val_accuracy = k_fold_cross_validation_manual(X=X_train, y=y_train, hyperparams=params, k=5, seed=42)
+        _, val_accuracy = k_fold_cross_validation_manual(X=X_train, y=y_train, hyperparams=params, k=5, seed=42, regression=regression)
 
         # Save the result
         result = params.copy()

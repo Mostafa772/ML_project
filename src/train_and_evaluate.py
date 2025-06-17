@@ -15,22 +15,23 @@ from src.utils import *
 
 
 class Train:
-    def __init__(self, hyperparameters: dict[str, float | int], model: Base_NN):
+    def __init__(self, hyperparameters: dict[str, float | int], model: Base_NN, regression: bool = False):
         self.hp = hyperparameters
         self.loss_function = MSE()
         self.train_losses = np.array([])
-        self.train_accuracies = np.array([])
+        self.train_scores = np.array([])
         self.val_losses = np.array([])
-        self.val_accuracies = np.array([])
+        self.val_scores = np.array([])
         self.test_loss = None
-        self.test_accuracy = None
+        self.test_score = None
         self.model = model
+        self.regression=regression
 
     def train_and_evaluate(self, X_train, y_train, X_val, y_val):
         self.train_losses = []
-        self.train_accuracies = []
+        self.train_scores = []
         self.val_losses = []
-        self.val_accuracies = []
+        self.val_scores = []
         
         X_val = X_val.values if isinstance(X_val, pd.DataFrame) else X_val
         y_val = y_val.values if isinstance(y_val, (pd.Series, pd.DataFrame)) else y_val
@@ -50,16 +51,20 @@ class Train:
         assert isinstance(self.hp['n_epochs'], int)
         for epoch in range(self.hp['n_epochs']):
             batch_losses = []
-            batch_accuracies = []
+            batch_scores = []
 
             for X_batch, y_batch in create_batches(X_train, y_train, self.hp['batch_size']):
                 # Forward pass
                 self.model.forward(X_batch, training=True)
 
-                # Loss and accuracy
+                # Loss and score
                 loss = self.loss_function.forward(self.model.output, y_batch)
                 predictions = np.round(self.model.output.squeeze())
-                accuracy = np.mean(predictions == y_batch.squeeze())
+                if not self.regression:
+                    predictions = np.round(self.model.output.squeeze())
+                    score = np.mean(predictions == y_batch.squeeze())
+                else:
+                    score = r2_score_global(y_batch, self.model.output)
 
                 # Backward pass
                 self.loss_function.backward(self.model.output, y_batch)
@@ -89,33 +94,37 @@ class Train:
                 optimizer.post_update_params()
 
                 batch_losses.append(loss)
-                batch_accuracies.append(accuracy)
+                batch_scores.append(score)
 
             # Epoch summary
             epoch_loss = np.mean(batch_losses)
-            epoch_acc = np.mean(batch_accuracies)
+            epoch_acc = np.mean(batch_scores)
             self.train_losses.append(epoch_loss)
-            self.train_accuracies.append(epoch_acc)
+            self.train_scores.append(epoch_acc)
 
             
             # Validation
             self.model.forward(X_val, training=False)
             val_loss = self.loss_function.forward(self.model.output, y_val)
             val_predictions = np.round(self.model.output.squeeze())
-            val_accuracy = np.mean(val_predictions == y_val.squeeze())
+            if not self.regression:
+                val_predictions = np.round(self.model.output.squeeze())
+                val_score = np.mean(val_predictions == y_val.squeeze())
+            else:
+                val_score = r2_score_global(y_val,self.model.output)
 
             self.val_losses.append(val_loss)
-            self.val_accuracies.append(val_accuracy)
+            self.val_scores.append(val_score)
 
             if epoch % 10 == 0:
                 print(f"Epoch {epoch}: ", end="")
                 print(f"Train Loss: {epoch_loss:.4f}, Acc: {epoch_acc*100:.2f}% | ", end="")
-                print(f"Val Loss: {val_loss:.4f}, Acc: {val_accuracy*100:.2f}%")
+                print(f"Val Loss: {val_loss:.4f}, Acc: {val_score*100:.2f}%")
 
             # Early stopping check
             early_stopping.on_epoch_end(
                 current_loss=val_loss,
-                current_accuracy=val_accuracy,
+                current_accuracy=val_score,
                 model=self.model,
                 epoch=epoch
             )
@@ -134,12 +143,12 @@ class Train:
                     early_stopping.wait = 0
                     early_stopping.patience -= int(early_stopping.patience / 10)
                     early_stopping.stop_training = False
-                    print(f"Added new neuron at epoch {epoch} wiht val_loss {self.val_losses[-1]:.4f}")
+                    print(f"Added new neuron at epoch {epoch} with val_loss {self.val_losses[-1]:.4f}")
                     continue
                 break
 
-        print(f"Final Validation Accuracy: {self.val_accuracies[-1]:.4f}")
-        return self.model, self.val_accuracies[-1]
+        print(f"Final Validation score: {self.val_scores[-1]:.4f}")
+        return self.model, self.val_scores[-1]
     
     def test(self, X_test, y_test) -> tuple[float, float]:
         self.model.forward(X_test, training=False)
@@ -147,19 +156,19 @@ class Train:
 
         predictions = np.round(self.model.output.squeeze())
         y_true = np.argmax(y_test, axis=1) if y_test.ndim > 1 else y_test
-        self.test_accuracy = np.mean(predictions == y_true)
-        print(f"Test Accuracy: {self.test_accuracy:.4f}")
-        return self.test_loss, self.test_accuracy
+        self.test_score = np.mean(predictions == y_true)
+        print(f"Test score: {self.test_score:.4f}")
+        return self.test_loss, self.test_score
 
-    def plot(self, accuracy=False):
+    def plot(self, score=False):
          # Plot training progress
         plot_losses(self.train_losses, self.val_losses, self.test_loss,
                     label1="Training Loss", label2="Validation Loss",
                     title="Loss Over Epochs")
 
-        if accuracy:
-            plot_accuracies(self.train_accuracies, self.val_accuracies, self.test_accuracy,
-                        label1="Training Accuracies", label2="Validation Accuracies",
-                        title="Accuracy Over Epochs")
+        if score:
+            plot_scores(self.train_scores, self.val_scores, self.test_score,
+                        label1="Training scores", label2="Validation scores",
+                        title="score Over Epochs")
     
     
