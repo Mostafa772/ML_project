@@ -15,7 +15,7 @@ from src.utils import *
 
 
 class Train:
-    def __init__(self, hyperparameters: dict[str, float | int], model: Base_NN, regression: bool = False):
+    def __init__(self, hyperparameters: dict[str, float | int], model: Base_NN, regression: bool = False, verbose: bool = False):
         self.hp = hyperparameters
         self.loss_function = MSE()
         self.train_losses = np.array([])
@@ -26,6 +26,7 @@ class Train:
         self.test_score = None
         self.model = model
         self.regression=regression
+        self.verbose = verbose
 
     def train_and_evaluate(self, X_train, y_train, X_val, y_val):
         self.train_losses = []
@@ -43,9 +44,10 @@ class Train:
         early_stopping = EarlyStopping(patience=self.hp['patience'], min_delta_loss=1e-5, min_delta_accuracy=0.001)
 
         # Before training loop:
-        print("Data shapes:")
-        print(f"X_train: {X_train.shape}, y_train: {y_train.shape}")
-        print(f"Hyperparams: {self.hp}")
+        if self.verbose:
+            print("Data shapes:")
+            print(f"X_train: {X_train.shape}, y_train: {y_train.shape}")
+            print(f"Hyperparams: {self.hp}")
 
         # Training loop
         assert isinstance(self.hp['n_epochs'], int)
@@ -116,7 +118,7 @@ class Train:
             self.val_losses.append(val_loss)
             self.val_scores.append(val_score)
 
-            if epoch % 10 == 0:
+            if epoch % 10 == 0 and self.verbose:
                 print(f"Epoch {epoch}: ", end="")
                 print(f"Train Loss: {epoch_loss:.4f}, Acc: {epoch_acc*100:.2f}% | ", end="")
                 print(f"Val Loss: {val_loss:.4f}, Acc: {val_score*100:.2f}%")
@@ -130,9 +132,10 @@ class Train:
             )
 
             if early_stopping.stop_training:
-                print(f"Early stopping at epoch {epoch}")
+                if self.verbose:
+                    print(f"Early stopping at epoch {epoch}")
+                    print(f"Restoring model weights from epoch {early_stopping.best_epoch}")
                 # Restore best weights
-                print(f"Restoring model weights from epoch {early_stopping.best_epoch}")
                 early_stopping.restore_weights(self.model)
                 # Cascade correlation
                 if isinstance(self.model, CascadeCorrelation):
@@ -143,11 +146,13 @@ class Train:
                     early_stopping.wait = 0
                     early_stopping.patience -= int(early_stopping.patience / 10)
                     early_stopping.stop_training = False
-                    print(f"Added new neuron at epoch {epoch} with val_loss {self.val_losses[-1]:.4f}")
+                    if self.verbose:
+                        print(f"Added new neuron at epoch {epoch} with val_loss {self.val_losses[-1]:.4f}")
                     continue
                 break
 
-        print(f"Final Validation score: {self.val_scores[-1]:.4f}")
+        if self.verbose: 
+            print(f"Final Validation score: {self.val_scores[-1]:.4f}")
         return self.model, self.val_scores[-1]
     
     def test(self, X_test, y_test) -> tuple[float, float]:
@@ -161,7 +166,8 @@ class Train:
         else:
             self.test_score = r2_score_global(y_test,self.model.output)
 
-        print(f"Test score: {self.test_score:.4f}")
+        if self.verbose:
+            print(f"Test score: {self.test_score:.4f}")
         return self.test_loss, self.test_score
 
     def plot(self, score=False):

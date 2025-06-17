@@ -1,0 +1,6 @@
+hidden_size,n_h_layers,hidden_activation,batch_norm,learning_rate,l1,l2,dropout_rate,batch_size,n_epochs,weight_decay,patience,CC,weights_init,val_accuracy
+12,5,<class 'src.activation_functions.Activation_Tanh'>,True,0.1,1e-07,1.778279410038923e-06,0.00031622776601683794,64,300,0.0005623413251903491,90,False,xavier,0.385607764593232
+12,5,<class 'src.activation_functions.Activation_Tanh'>,True,0.1,1e-06,1.778279410038923e-06,0.0001,64,300,0.01778279410038923,90,False,gaussian,0.3834456086008761
+12,5,<class 'src.activation_functions.Activation_ReLU'>,True,0.1,1e-05,3.1622776601683795e-05,0.001,64,300,0.1,90,False,xavier,0.3801351344765317
+12,5,<class 'src.activation_functions.Activation_Tanh'>,True,0.01,3.162277660168379e-07,0.01,0.0001,32,300,0.0001,90,False,gaussian,0.3681396800823179
+12,5,<class 'src.activation_functions.Activation_Tanh'>,True,0.001,3.162277660168379e-06,0.01,0.001,64,300,0.0031622776601683794,90,False,gaussian_scaled,0.3673176917181228

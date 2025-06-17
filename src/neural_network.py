@@ -27,7 +27,6 @@ class NN(Base_NN):
         super().__init__()
         prev_size = input_size
 
-        print(hidden_size, hidden_activation, dropout_rate, use_batch_norm)
         # Create hidden layers
 
         for _ in range(n_h_layers):

@@ -1,0 +1,6 @@
+learning_rate,l1,l2,dropout_rate,batch_size,n_epochs,hidden_size,hidden_activation,batch_norm,weight_decay,n_h_layers,patience,CC,weights_init,val_loss
+0.03,0.001,0.001,0.1,32,150,4,<class 'src.activation_functions.Activation_ReLU'>,False,0.01,2,50,False,he,0.044901602882220365
+0.007,1e-06,1e-05,0.1,1000,150,4,<class 'src.activation_functions.Activation_Tanh'>,False,0,2,30,False,gaussian_scaled,0.044964809026881145
+0.01,1e-06,0.001,0.1,8,300,6,<class 'src.activation_functions.Activation_Leaky_ReLU'>,True,0.01,2,30,False,gaussian_scaled,0.045689369694491874
+0.01,0.0001,0.001,0.3,8,150,6,<class 'src.activation_functions.Activation_Tanh'>,False,0,2,50,False,gaussian,0.046103198279790876
+0.007,0.0001,1e-05,0.1,1000,300,6,<class 'src.activation_functions.Activation_Tanh'>,False,0,2,50,False,random,0.04659185537402666
