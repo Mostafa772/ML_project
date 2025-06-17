@@ -50,15 +50,4 @@ def load_data(MONK_NUM=1,train=True):
     )
     print("one hot encoded data: ", one_hot_encoded_data.shape)
     # we are returning the values of the sereis which will be the target
-    return one_hot_encoded_data, y.values
-
-
-
-# X_train, X_val, y_train, y_val = train_test_split(
-#     X, y, test_size=0.2, random_state=42)
-
-# Print the shape of the resulting datasets
-# print("Training Features Shape:", X_train.shape)
-# print("Validation Features Shape:", X_val.shape)
-# print("Training Target Shape:", y_train.shape)
-# print("Validation Target Shape:", y_val.shape)
+    return one_hot_encoded_data, pd.DataFrame(y) #.values
