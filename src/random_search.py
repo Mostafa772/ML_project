@@ -9,13 +9,14 @@ from train_and_evaluate import *
 def random_search(X_train, y_train, param_distributions, n_iters, csv_path="top_5_results.csv", regression=False):
     results = []
     
-    for _ in range(n_iters):
+    for iter in range(n_iters):
         params = {
             key: random.choice(values)
             for key, values in param_distributions.items()
         }
 
         # Train and evaluate the model
+        print(f"Iteration {iter}")
         _, val_accuracy = k_fold_cross_validation_manual(X=X_train, y=y_train, hyperparams=params, k=5, seed=42, regression=regression)
 
         # Save the result

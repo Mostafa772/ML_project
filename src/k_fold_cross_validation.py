@@ -69,5 +69,5 @@ def k_fold_cross_validation_manual(X, y, hyperparams: dict, k=5, seed=0, regress
         current = stop
 
     mean_accuracy = np.mean(val_accuracies)
-    print(f"\n📊 Manual K-Fold | Mean Validation Accuracy over {k} folds: {mean_accuracy:.4f}")
+    print(f"📊 Manual K-Fold | Mean Validation Accuracy over {k} folds: {mean_accuracy:.4f}\n")
     return val_accuracies, mean_accuracy
