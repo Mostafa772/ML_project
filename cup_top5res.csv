@@ -1,2 +1,2 @@
-hidden_size,n_h_layers,hidden_activation,batch_norm,learning_rate,l1,l2,dropout_rate,batch_size,n_epochs,weight_decay,patience,CC,weights_init,val_accuracy
-14,5,<class 'src.activation_functions.Activation_Tanh'>,True,0.009,1e-09,1e-06,0,64,300,1e-09,90,False,gaussian_scaled,0.38421424986052993
+hidden_size,n_h_layers,hidden_activation,batch_norm,learning_rate,l1,l2,dropout_rate,batch_size,n_epochs,weight_decay,patience,CC,weights_init,output_activation,val_accuracy
+10,2,<class 'src.activation_functions.Activation_Tanh'>,True,0.009,1e-09,1e-06,0,64,350,1e-07,30,False,gaussian_scaled,<src.activation_functions.Activation_Linear object at 0x7f33b2bbfce0>,0.9095839404366289

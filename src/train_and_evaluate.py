@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+from scheduler import LearningRateScheduler
 from src.activation_functions import *
 from src.early_stopping import EarlyStopping
 from src.layer import Layer_Dense
@@ -35,6 +36,7 @@ class Train:
         y_val = y_val.values if isinstance(y_val, (pd.Series, pd.DataFrame)) else y_val
 
         optimizer = Optimizer_Adam(learning_rate=self.hp['learning_rate'], decay=self.hp['weight_decay'])
+        sched = LearningRateScheduler(optimizer, self.hp['sched_decay'])
 
         # Initialize early stopping
         assert isinstance(self.hp['patience'], int)
@@ -92,6 +94,7 @@ class Train:
                         optimizer.update_params(layer)
                 optimizer.post_update_params()
 
+
                 batch_losses.append(loss)
                 batch_scores.append(score)
 
@@ -119,6 +122,9 @@ class Train:
                 print(f"Epoch {epoch}: ", end="")
                 print(f"Train Loss: {epoch_loss:.4f}, Acc: {epoch_acc*100:.2f}% | ", end="")
                 print(f"Val Loss: {val_loss:.4f}, Acc: {val_score*100:.2f}%")
+            
+            # Learning rate scheduler
+            sched.at_epoch_end(val_loss)
 
             # Early stopping check
             early_stopping.on_epoch_end(

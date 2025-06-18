@@ -13,7 +13,6 @@ def k_fold_cross_validation_manual(X, y, hyperparams: dict, k=5, seed=0, regress
     assert 'hidden_activation' in hyperparams, "K-Fold Cross valid no hidden_activation"
     assert 'dropout_rate' in hyperparams, "K-Fold Cross valid no dropout_rate"
     assert 'batch_norm' in hyperparams, "K-Fold Cross valid no batch_norm"
-    assert 'CC' in hyperparams, "K-Fold Cross valid no CC"
 
     if regression:
         input_size = 12
@@ -45,8 +44,8 @@ def k_fold_cross_validation_manual(X, y, hyperparams: dict, k=5, seed=0, regress
         if 'hidden_activation' in hyperparams and isinstance(hyperparams['hidden_activation'],list):
             hyperparams['hidden_activation'] = hyperparams['hidden_activation'][0]
 
-        if hyperparams['CC']:
-            model = CascadeCorrelation(input_size = 17, output_size= 1, activation=hyperparams['hidden_activation'], output_activation = Activation_Sigmoid)
+        if 'CC' in hyperparams and hyperparams['CC']:
+            model = CascadeCorrelation(input_size = input_size, output_size= output_size, activation=hyperparams['hidden_activation'], output_activation = Activation_Sigmoid)
         else:
             model = NN(
                 l1=hyperparams['l1'],
@@ -58,7 +57,8 @@ def k_fold_cross_validation_manual(X, y, hyperparams: dict, k=5, seed=0, regress
                 dropout_rate=hyperparams['dropout_rate'],
                 use_batch_norm=hyperparams['batch_norm'],
                 weights_init=hyperparams['weights_init'],
-                n_h_layers=hyperparams['n_h_layers']
+                n_h_layers=hyperparams['n_h_layers'],
+                output_activation=hyperparams['output_activation']
             )
 
         train = Train(hyperparams, model, regression)
