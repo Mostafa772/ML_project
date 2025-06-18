@@ -13,11 +13,6 @@ from src.ensemble.cascade_correlation import CascadeCorrelation
 from src.optimizers import *
 from src.utils import *
 
-            # # Validation
-            # model.forward(X_val, training=False)
-            # val_loss = loss_function.forward(model.output, y_val)
-            # val_predictions = np.round(model.output.squeeze())
-            # val_accuracy = np.mean(val_predictions == y_val.squeeze())
 
 class Train:
     def __init__(self, hyperparameters: dict[str, float | int], model: Base_NN, regression: bool = False):
@@ -138,13 +133,13 @@ class Train:
                 print(f"Early stopping at epoch {epoch}")
                 # Restore best weights
                 print(f"Restoring model weights from epoch {early_stopping.best_epoch}")
-                early_stopping.restore_weights(model)
+                early_stopping.restore_weights(self.model)
                 # Cascade correlation
-                if isinstance(model, CascadeCorrelation):
-                    if model.is_limit_reached():
+                if isinstance(self.model, CascadeCorrelation):
+                    if self.model.is_limit_reached():
                         break
-
-                    model.add_neuron()
+                    
+                    self.model.add_neuron()
                     early_stopping.wait = 0
                     early_stopping.patience -= int(early_stopping.patience / 10)
                     early_stopping.stop_training = False
@@ -179,5 +174,4 @@ class Train:
             plot_scores(self.train_scores, self.val_scores, self.test_score,
                         label1="Training scores", label2="Validation scores",
                         title="score Over Epochs")
-    
     
