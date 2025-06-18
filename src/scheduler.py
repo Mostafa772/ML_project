@@ -1,10 +1,10 @@
 from optimizers import Optimizer_Base
 
 class LearningRateScheduler:
-    def __init__(self, optimizer: Optimizer_Base, decay: float = 1.4, window: int = 5, threshold: float = 0.006):
+    def __init__(self, optimizer: Optimizer_Base, decay: float = 1.4, window: int = 30, threshold: float = 0.006):
         self.optimizer: Optimizer_Base = optimizer
         self.decay: float = decay
-        self.window: int = window
+        self.window: int = max(window, 1)
         self.threshold: float = threshold
         self.losses: list[float] = []
 
