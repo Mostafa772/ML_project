@@ -25,7 +25,7 @@ def random_search(X_train, y_train, param_distributions, n_iters, csv_path="top_
         results.append(result)
 
     # Sort by validation accuracy (descending)
-    top_results = sorted(results, key=lambda x: x["val_accuracy"], reverse=True)[:]
+    top_results = sorted(results, key=lambda x: x["val_accuracy"], reverse=True)[:5]
 
     # Save top 5 to CSV
     fieldnames = list(top_results[0].keys())
