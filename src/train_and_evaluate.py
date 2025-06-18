@@ -36,7 +36,7 @@ class Train:
         y_val = y_val.values if isinstance(y_val, (pd.Series, pd.DataFrame)) else y_val
 
         optimizer = Optimizer_Adam(learning_rate=self.hp['learning_rate'], decay=self.hp['weight_decay'])
-        sched = LearningRateScheduler(optimizer, self.hp['sched_decay'])
+        sched = LearningRateScheduler(optimizer, self.hp['sched_decay'], window=int(self.hp['patience']/2))
 
         # Initialize early stopping
         assert isinstance(self.hp['patience'], int)
