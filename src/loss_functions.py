@@ -4,6 +4,9 @@ from activation_functions import Activation_Softmax
 
 
 class Loss:
+    def forward(self, y_pred, y_true):
+        raise NotImplementedError
+
     def calculate(self, output, y):
         sample_losses = self.forward(output, y)
         data_loss = np.mean(sample_losses)
@@ -49,9 +52,9 @@ class Activation_Softmax_Loss_CategoricalCrossentropy(Loss):
         self.loss = Loss_CategoricalCrossentropy()
 
 
-    def forward(self, inputs, y_true):
+    def forward(self, y_pred, y_true):
         # Output layer's activation function
-        self.activation.forward(inputs)
+        self.activation.forward(y_pred)
 
         # Set the output
         self.output = self.activation.output
@@ -112,3 +115,27 @@ class MEE(Loss):
         self.dinputs = self.dinputs / (samples * outputs)
         
         return self.dinputs
+    
+    
+def r2_score_per_output(y_true, y_pred):
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
+    n_outputs = y_true.shape[1]
+    r2s = []
+
+    for i in range(n_outputs):
+        ss_res = np.sum((y_true[:, i] - y_pred[:, i]) ** 2)
+        ss_tot = np.sum((y_true[:, i] - np.mean(y_true[:, i])) ** 2)
+        r2 = 1 - ss_res / ss_tot if ss_tot != 0 else 0.0
+        r2s.append(r2)
+    return r2s  # List of R² values per output
+
+def r2_score_global(y_true, y_pred):
+    # print("y_true shape: ", y_true.shape)
+    # print("y_pred shape: ", y_pred.shape)
+    y_true = np.asarray(y_true).reshape(-1)
+    y_pred = np.asarray(y_pred).reshape(-1)
+
+    ss_res = np.sum((y_true - y_pred) ** 2)
+    ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
+    return 1 - ss_res / ss_tot if ss_tot != 0 else 0.0

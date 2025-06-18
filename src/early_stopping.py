@@ -1,6 +1,5 @@
 import numpy as np
 
-from activation_functions import Activation
 from ensemble.cascade_correlation import CascadeCorrelation
 
 class EarlyStopping:
