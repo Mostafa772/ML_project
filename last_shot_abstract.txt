@@ -1,0 +1,3 @@
+Modern ML libraries offer helpful abstractions, but building components from scratch gave us a deeper understanding of the underlying mechanics. With limited time and compute, we made careful trade-offs, combining human intuition with automation.
+
+The final model is a neural network tuned via random search over a broad hyperparameter space. It uses 2–3 hidden layers (up to 64 units) with ReLU, Leaky ReLU, or Tanh, plus dropout, batch norm, and L1/L2 regularization. Xavier and He initialization aid convergence. Visualization was key to interpreting model behavior and guiding tuning.
