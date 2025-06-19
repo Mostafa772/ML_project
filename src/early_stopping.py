@@ -48,28 +48,28 @@ class EarlyStopping:
     def save_weights(self, model):
         self.best_weights = []
         for layer in model.layers:
-            if not hasattr(layer, 'weights'):
-                continue
-            self.best_weights.append(layer.weights)
+            if hasattr(layer, 'weights') and hasattr(layer, 'biases'):
+                weights = layer.weights.copy()
+                biases = layer.biases.copy()
+                self.best_weights.append((weights, biases))
 
     def restore_weights(self, model):
-        """
-        Restore the model's weights to the best epoch.
-
-        Parameters:
-        - model: The model to restore the weights to.
-        """
         if self.best_weights is None:
             print("Weights not restored")
             return
 
-        if isinstance(model, CascadeCorrelation) and len(self.best_weights) != len(model.layers)/2:
+        if isinstance(model, CascadeCorrelation) and len(self.best_weights) != len(
+                [layer for layer in model.layers if hasattr(layer, 'weights')]):
             print("Weights cannot be restored, network size changed")
             return
 
-        for layer, weights in zip(model.layers, self.best_weights):
-            if not hasattr(layer, 'weights'):
-                continue
-            layer.weights = weights
+        j = 0
+        for layer in model.layers:
+            if hasattr(layer, 'weights') and hasattr(layer, 'biases'):
+                weights, biases = self.best_weights[j]
+                layer.weights = weights.copy()
+                layer.biases = biases.copy()
+                j += 1
+
                 
                 

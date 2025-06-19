@@ -2,8 +2,7 @@ import numpy as np
 import pandas as pd
 
 class Layer_Dense:
-    def __init__(self, n_inputs, n_neurons, weights_init="gaussian", l1=0.0, l2=0.0, seed = 0):
-        np.random.seed(seed)
+    def __init__(self, n_inputs, n_neurons, weights_init="gaussian", l1=0.0, l2=0.0):
         
         if weights_init == "gaussian":
             self.weights = np.random.normal(0.0, 1.0, (n_inputs, n_neurons))  # std=1

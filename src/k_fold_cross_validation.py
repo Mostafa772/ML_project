@@ -44,8 +44,8 @@ def k_fold_cross_validation_manual(X, y, hyperparams: dict, k=5, seed=0, regress
         if 'hidden_activation' in hyperparams and isinstance(hyperparams['hidden_activation'],list):
             hyperparams['hidden_activation'] = hyperparams['hidden_activation'][0]
 
-        if not 'n_h_layers' in hyperparams:
-            hyperparams['n_h_layers'] = len(hyperparams['hidden_size']) if isinstance(hyperparams['hidden_size'], list) else 1
+        if isinstance(hyperparams['hidden_size'], list):
+            hyperparams['n_h_layers'] = len(hyperparams['hidden_size'])
         
         if not 'CC' in hyperparams:
             hyperparams['CC'] = False

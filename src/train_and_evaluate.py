@@ -74,18 +74,10 @@ class Train:
                 assert dvalues.shape == self.model.output.shape, \
                     f"Gradient shape mismatch: {dvalues.shape} vs {self.model.output.shape}"
                 
-                i = 0
+                
                 for layer in reversed(self.model.layers):
-                    i =- 1
                     layer.backward(dvalues)
                     dvalues = np.array(layer.dinputs)
-
-                    # Regularization
-                    if isinstance(layer, Layer_Dense):
-                        if layer.l1 > 0:
-                            layer.dweights += layer.l1 * np.sign(layer.weights)
-                        if layer.l2 > 0:
-                            layer.dweights += 2 * layer.l2 * layer.weights
 
                 # Update weights
                 optimizer.pre_update_params()

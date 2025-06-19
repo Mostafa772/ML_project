@@ -10,7 +10,6 @@ class Dropout:
         """
         self.rate = 1 - rate  # Store keep rate instead of drop rate
         self.mask = None
-        np.random.seed(0)
         
     def forward(self, inputs, training=True):
         """
