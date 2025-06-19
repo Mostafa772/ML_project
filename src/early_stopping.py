@@ -58,7 +58,7 @@ class EarlyStopping:
             print("Weights not restored")
             return
 
-        if isinstance(model, CascadeCorrelation) and len(self.best_weights) != len(
+        if len(self.best_weights) != len(
                 [layer for layer in model.layers if hasattr(layer, 'weights')]):
             print("Weights cannot be restored, network size changed")
             return
