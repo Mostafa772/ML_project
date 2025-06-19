@@ -13,6 +13,7 @@ This project implements a modular neural network framework from scratch in Pytho
 - **CUP Dataset**: A regression task involving the prediction of 3D coordinates from 12 input features.
 - **MONK Datasets**: Three classic binary classification tasks (MONK-1, MONK-2, MONK-3).
 
+```
 ## Project Structure
 
 ML_project/
@@ -54,6 +55,8 @@ ML_project/
 │   └── utils.py
 │
 └── final_results.csv          # CUP results for submission
+
+```
 
 ## Installation
 
