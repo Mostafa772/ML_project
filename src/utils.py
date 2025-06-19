@@ -64,7 +64,7 @@ def create_batches(X, y, batch_size):
  
 
 
-def plot_scores(train_vals: np.ndarray, val_vals: np.ndarray, test_accuracy: float, label1="Training accuracies", label2="Validation accuracies", label3="Test accuracy", title="Accuracy Over Epochs", filename: str| None = None):
+def plot_scores(train_vals: np.ndarray, val_vals: np.ndarray, test_accuracy: float | None, label1="Training accuracies", label2="Validation accuracies", label3="Test accuracy", title="Accuracy Over Epochs", filename: str| None = None):
     """
     Plot training and validation accuracies over epochs.
 
@@ -76,7 +76,8 @@ def plot_scores(train_vals: np.ndarray, val_vals: np.ndarray, test_accuracy: flo
     plt.figure(figsize=(8, 6))
     plt.plot(train_vals, label=label1, color="blue", linewidth=2)
     plt.plot(val_vals, label=label2, linestyle="--", color="orange", linewidth=2)
-    plt.axhline(y=test_accuracy, color="red", label=label3, linewidth=0.5)
+    if test_accuracy:
+        plt.axhline(y=test_accuracy, color="red", label=label3, linewidth=0.5)
     plt.title(title)
     plt.xlabel("Epoch")
     plt.ylabel("Accuracy")
@@ -89,7 +90,7 @@ def plot_scores(train_vals: np.ndarray, val_vals: np.ndarray, test_accuracy: flo
         plt.show()
 
 
-def plot_losses(train_vals: np.ndarray, val_vals: np.ndarray, test_loss: float, label1="Training loss", label2="Validation loss", label3 = "Test loss", title="Loss Over Epochs", filename: str| None = None):
+def plot_losses(train_vals: np.ndarray, val_vals: np.ndarray, test_loss: float | None, label1="Training loss", label2="Validation loss", label3 = "Test loss", title="Loss Over Epochs", filename: str| None = None):
     """
     Plot training and validation losses over epochs.
 
@@ -101,7 +102,8 @@ def plot_losses(train_vals: np.ndarray, val_vals: np.ndarray, test_loss: float, 
     plt.figure(figsize=(8, 6))
     plt.plot(train_vals, label=label1, color="blue", linewidth=2)
     plt.plot(val_vals, label=label2, linestyle="--", color="orange", linewidth=2)
-    plt.axhline(y=test_loss, color="red", label=label3, linewidth=0.5)
+    if test_loss:
+        plt.axhline(y=test_loss, color="red", label=label3, linewidth=0.5)
     plt.title(title)
     plt.xlabel("Epoch")
     plt.ylabel("Loss")
