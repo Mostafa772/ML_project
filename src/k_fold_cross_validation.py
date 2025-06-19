@@ -44,8 +44,14 @@ def k_fold_cross_validation_manual(X, y, hyperparams: dict, k=5, seed=0, regress
         if 'hidden_activation' in hyperparams and isinstance(hyperparams['hidden_activation'],list):
             hyperparams['hidden_activation'] = hyperparams['hidden_activation'][0]
 
-        if 'CC' in hyperparams and hyperparams['CC']:
-            model = CascadeCorrelation(input_size = input_size, output_size= output_size, activation=hyperparams['hidden_activation'], output_activation = Activation_Sigmoid)
+        if not 'n_h_layers' in hyperparams:
+            hyperparams['n_h_layers'] = len(hyperparams['hidden_size']) if isinstance(hyperparams['hidden_size'], list) else 1
+        
+        if not 'CC' in hyperparams:
+            hyperparams['CC'] = False
+
+        if hyperparams['CC']:
+            model = CascadeCorrelation(input_size = input_size, output_size= output_size, activation=hyperparams['hidden_activation'], output_activation = hyperparams['output_activation'])
         else:
             model = NN(
                 l1=hyperparams['l1'],

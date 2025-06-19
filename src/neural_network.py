@@ -20,17 +20,20 @@ class Base_NN:
         return self.output
 
 class NN(Base_NN):
-    def __init__(self, l1, l2, input_size, hidden_size, output_size,
+    def __init__(self, l1, l2, input_size, hidden_size: list[int] | int, output_size,
                  hidden_activation=Activation_ReLU, dropout_rate=0.0,
-                 use_batch_norm=False, output_activation=Activation_Sigmoid(), weights_init: str = 'gaussian', n_h_layers = 1):
+                 use_batch_norm=False, output_activation=Activation_Sigmoid(), weights_init: str = 'gaussian', n_h_layers: int = 1):
         super().__init__()
         prev_size = input_size
 
         # Create hidden layers
 
-        for _ in range(n_h_layers):
+        if isinstance(hidden_size, int):
+            hidden_size = [hidden_size for _ in range(n_h_layers)]
+
+        for size in hidden_size:
             # Add dense layer
-            self.layers.append(Layer_Dense(prev_size, hidden_size, l1=l1, l2=l2, weights_init=weights_init))
+            self.layers.append(Layer_Dense(prev_size, size, l1=l1, l2=l2, weights_init=weights_init))
 
             # Add batch normalization if specified
             if use_batch_norm:
@@ -43,7 +46,7 @@ class NN(Base_NN):
             if dropout_rate > 0:
                 self.layers.append(Dropout(dropout_rate))
 
-            prev_size = hidden_size
+            prev_size = size
 
         # Output layer
         # initialize the output layer with the same weight initialization method as the hidden layers
