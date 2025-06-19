@@ -65,7 +65,7 @@ class Activation_ELU(Activation):
         self.inputs = inputs 
         self.output = np.where(inputs > 0, inputs, alpha * np.exp(inputs) - 1)
         
-    def backward(self, dvalues, alpha):
+    def backward(self, dvalues, alpha=1.0):
         self.dinputs = dvalues.copy()
         self.dinputs[self.inputs < 0] = dvalues[self.inputs < 0] * (self.output + alpha)
         self.dinputs 

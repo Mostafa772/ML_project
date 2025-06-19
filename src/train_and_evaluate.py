@@ -7,7 +7,7 @@ from src.early_stopping import EarlyStopping
 from src.layer import Layer_Dense
 from src.loss_functions import *
 from src.neural_network import Base_NN
-from src.ensemble.cascade_correlation import CascadeCorrelation
+from src.cascade_correlation import CascadeCorrelation
 from src.optimizers import *
 from src.utils import *
 

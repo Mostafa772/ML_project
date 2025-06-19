@@ -1,6 +1,6 @@
 import numpy as np
 
-from ensemble.cascade_correlation import CascadeCorrelation
+from cascade_correlation import CascadeCorrelation
 
 class EarlyStopping:
     def __init__(self, patience=20, min_delta_loss=0.0, min_delta_accuracy=0.0):
