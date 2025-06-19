@@ -1,2 +1,0 @@
-learning_rate,l1,l2,dropout_rate,batch_size,n_epochs,hidden_size,hidden_activation,batch_norm,weight_decay,patience,n_h_layers,weights_init,output_activation,sched_decay,CC,val_accuracy
-0.0379269019073225,1e-05,0.00021544346900318823,2.782559402207126e-05,16,100,5,<class 'src.activation_functions.Activation_Leaky_ReLU'>,False,1e-05,50,2,he,<src.activation_functions.Activation_Sigmoid object at 0x7f5032b87b00>,1,False,1.0

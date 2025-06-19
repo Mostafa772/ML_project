@@ -1,5 +1,11 @@
 # ML_project
 
+## Team Members
+
+- Mostafa Eid eid.m2@studenti.unipi.it
+- Dieudonne Iyabivuze d.iyabivuze@studenti.unipi.it
+- Matteo Piredda m.piredda2@gmail.com
+
 ## Overview
 
 This project implements a modular neural network framework from scratch in Python, designed for both regression and classification tasks. The framework is applied to two main problems:
@@ -7,24 +13,8 @@ This project implements a modular neural network framework from scratch in Pytho
 - **CUP Dataset**: A regression task involving the prediction of 3D coordinates from 12 input features.
 - **MONK Datasets**: Three classic binary classification tasks (MONK-1, MONK-2, MONK-3).
 
-The project supports advanced features such as:
-- Customizable neural network architectures
-- Batch normalization, dropout, and various activation functions
-- Early stopping and learning rate scheduling
-- Random search for hyperparameter optimization
-- Ensemble learning (majority voting, cascade correlation)
-- K-fold cross-validation
-- Modular code for easy experimentation
-
-## Team Members
-
-- Dieudonne
-- Mostafa
-- Matteo
-
 ## Project Structure
 
-```
 ML_project/
 │
 ├── CUP.ipynb                # Main notebook for CUP regression task
@@ -52,9 +42,7 @@ ML_project/
 │   ├── data_preprocessing.py
 │   ├── dropout.py
 │   ├── early_stopping.py
-│   ├── ensemble/
-│   │   └── cascade_correlation.py
-│   ├── ensemble_learning.py
+│   ├── cascade_correlation.py
 │   ├── k_fold_cross_validation.py
 │   ├── layer.py
 │   ├── loss_functions.py
@@ -65,19 +53,18 @@ ML_project/
 │   ├── train_and_evaluate.py
 │   └── utils.py
 │
-├── top_5_results.csv        # Best hyperparameters/results for CUP
-├── monk1_top5res.csv        # Best results for MONK-1
-├── monk2_top5res.csv        # Best results for MONK-2
-├── monk3_top5res.csv        # Best results for MONK-3
-└── cup_top5res.csv          # Best results for CUP
-```
+└── final_results.csv          # CUP results for submission
 
 ## Installation
 
 1. **Clone the repository** and navigate to the project folder.
+
+   ```bash
+   https://github.com/Mostafa772/ML_project.git
+   ```
 2. **Install dependencies** (preferably in a virtual environment):
 
-   ```powershell
+   ```bash
    pip install -r requirements.txt
    ```
 
@@ -109,31 +96,48 @@ ML_project/
 - Key modules:
   - `neural_network.py`: Main NN class, supports custom architectures
   - `train_and_evaluate.py`: Training loop, early stopping, evaluation
-  - `ensemble_learning.py`: Ensemble methods (majority voting)
   - `random_search.py`: Hyperparameter optimization
   - `k_fold_cross_validation.py`: K-fold support
-  - `ensemble/cascade_correlation.py`: Cascade correlation implementation
+  - `optimizers.py`: Various optimizers implementations (Adam, Adagrad, RMS_Prop, SGD)
+  - `loss_functions.py`: Various loss functions implementations
+  - `activation_functions`: Various activation functions implementations (Linear, Sigmoid, Tanh, ReLU, LeakyReLU, ELU, SoftMax)
 
 ## Features
 
-- **Custom Neural Networks**: Build deep networks with any number of layers, activations, batch norm, dropout, etc.
-- **Ensemble Learning**: Train multiple models and combine predictions via majority voting.
-- **Cascade Correlation**: Dynamically add neurons during training for improved performance.
-- **Early Stopping & Scheduling**: Prevent overfitting and tune learning rates automatically.
-- **Random Search**: Efficient hyperparameter search.
-- **K-Fold Cross-Validation**: Reliable model evaluation.
-- **Visualization**: Training/validation accuracy and loss plots are saved in `results/`.
+- **Custom neural network architecture**
 
-## Results
+  - Fully connected networks with any number of hidden layers
+  - Configurable layer sizes, weight initializations, and activation functions
+- **Activation functions**
 
-- Best hyperparameters and validation scores are saved in the `*_top5res.csv` files.
-- Training and validation curves are saved as PNGs in the `results/` folder.
+  - ReLU, Leaky ReLU, Tanh, Sigmoid, Softmax, and easily extendable to custom activations
+- **Regularization techniques**
 
-## How to Extend
+  - Dropout (per layer configurable rates)
+  - L2 weight decay
+  - Batch normalization (layer-wise normalization for stable training)
+- **Optimizers**
 
-- Add new activation functions in `src/activation_functions.py`.
-- Implement new optimizers in `src/optimizers.py`.
-- Add new datasets in the `data/` folder and update the notebooks accordingly.
+  - Stochastic Gradient Descent (SGD) with momentum, Adam, Adagrad, RMS_Prop
+- **Training strategies**
+
+  - Early stopping based on validation performance
+  - Learning rate scheduling (decay, adaptive)
+  - Mini-batch gradient descent
+  - K-fold cross-validation support
+- **Hyperparameter optimization**
+
+  - Random search over architecture and training hyperparameters
+  - Top-N configuration logging
+- **Ensemble learning**
+
+  - Majority voting ensembles
+  - Cascade correlation
+- **Evaluation and visualization**
+
+  - Automatic training/validation loss and accuracy plotting
+  - Export of results to CSV and PNG
+  - Modular codebase for easy experimentation and extension
 
 ## Requirements
 
@@ -143,9 +147,8 @@ See `requirements.txt` for all dependencies. Main libraries:
 - matplotlib
 - jupyter
 
-## Acknowledgements
+## References
 
+[Machine Learning A. Micheli lessons and slides](https://elearning.di.unipi.it/course/view.php?id=994)
 
----
-
-For any questions, please contact the project members.
+[Neural Networks from scratch](https://github.com/GeorgeQLe/Textbooks-and-Papers/blob/master/%5BML%5D%20Harrison%20Kinsley%2C%20Daniel%20Kukie%C5%82a%20-%20Neural%20Networks%20from%20Scratch%20in%20Python%20(2020).pdf)

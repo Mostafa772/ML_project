@@ -1,7 +1,7 @@
 import numpy as np
 
 from src.neural_network import NN
-from src.ensemble.cascade_correlation import CascadeCorrelation
+from src.cascade_correlation import CascadeCorrelation
 from src.activation_functions import *
 from src.train_and_evaluate import Train
 
