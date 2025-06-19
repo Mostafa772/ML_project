@@ -14,6 +14,9 @@ class CascadeCorrelation(Base_NN):
 
         self.layers = [CascadeCorrelationLayer(input_size, 1), activation(), CascadeCorrelationLayer(input_size + 1, output_size, is_output=True), output_activation()]
 
+    def __len__(self) -> int:
+        return sum(1 for l in self.layers if isinstance(l, CascadeCorrelationLayer))
+
     def add_neuron(self) -> 'CascadeCorrelation':
         if self.is_limit_reached():
             return self

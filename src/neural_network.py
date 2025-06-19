@@ -7,9 +7,9 @@ from src.activation_functions import *
 from src.batch_normalization import *
 from src.data_preprocessing import *
 from src.layer import *
-from src.model_regularization import *
 from src.optimizers import *
 from src.utils import *
+from src.dropout import *
 
 class Base_NN:
     def __init__(self):

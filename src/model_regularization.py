@@ -1,7 +1,8 @@
 import numpy as np
 
 from activation_functions import Activation
-# from ensemble.cascade_correlation import CascadeCorrelation
+from ensemble.cascade_correlation import CascadeCorrelation
+from layer import Layer_Dense
 
 class EarlyStopping:
     def __init__(self, patience=20, min_delta_loss=0.0, min_delta_accuracy=0.0):
@@ -49,63 +50,25 @@ class EarlyStopping:
     def save_weights(self, model):
         self.best_weights = []
         for layer in model.layers:
-            if not hasattr(layer, 'weights'):
-                continue
-            self.best_weights.append(layer.weights)
+            if isinstance(layer, Layer_Dense):
+                weights = layer.weights.copy()
+                biases = layer.biases.copy()
+                self.best_weights.append((weights, biases))
 
     def restore_weights(self, model):
-        """
-        Restore the model's weights to the best epoch.
-
-        Parameters:
-        - model: The model to restore the weights to.
-        """
         if self.best_weights is None:
             print("Weights not restored")
             return
 
-        if isinstance(model, CascadeCorrelation) and len(self.best_weights) != len(model.layers)/2:
+        if len(self.best_weights) != len(model):
             print("Weights cannot be restored, network size changed")
             return
 
-        for layer, weights in zip(model.layers, self.best_weights):
-            if not hasattr(layer, 'weights'):
-                continue
-            layer.weights = weights
-                
-                
-class Dropout:
-    def __init__(self, rate):
-        """
-        Initialize a dropout layer.
-        
-        Parameters:
-        - rate: Dropout rate (fraction of inputs to drop)
-        """
-        self.rate = 1 - rate  # Store keep rate instead of drop rate
-        self.mask = None
-        
-    def forward(self, inputs, training=True):
-        """
-        Perform the forward pass with dropout.
-        
-        Parameters:
-        - inputs: Input data
-        - training: Boolean indicating training mode
-        """
-        self.inputs = inputs
-        
-        if training:
-            self.mask = np.random.binomial(1, self.rate, size=inputs.shape) / self.rate
-            self.output = inputs * self.mask
-        else:
-            self.output = inputs
-            
-    def backward(self, dvalues):
-        """
-        Perform the backward pass through dropout.
-        
-        Parameters:
-        - dvalues: Gradient of the loss with respect to the output
-        """
-        self.dinputs = dvalues * self.mask
+
+        j = 0
+        for layer in model.layers:
+            if isinstance(layer, Layer_Dense):
+                weights, biases = self.best_weights[j]
+                layer.weights = weights.copy()
+                layer.biases = biases.copy()
+                j += 1
