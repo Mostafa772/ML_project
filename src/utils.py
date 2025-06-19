@@ -273,7 +273,6 @@ def preprocess_data(data, target=None, normalize_type="z-score", val_ratio=0.2, 
         # Split into train/val
         X_train, X_val, y_train, y_val = train_val_split(X_normalized, y, val_ratio=val_ratio)
         X_train, X_val, y_train, y_val = map(pd.DataFrame, (X_train, X_val, y_train, y_val))
-        print(y_val, y_train)
         # Normalize y (with shared parameters)
         y_train_normalized, y_scaler_params = normalize(y_train, type=normalize_type)
         y_val_normalized, _ = normalize(y_val, type=normalize_type, params=y_scaler_params)
