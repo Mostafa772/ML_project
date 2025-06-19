@@ -8,14 +8,15 @@ from train_and_evaluate import *
 
 def random_search(X_train, y_train, param_distributions, n_iters, csv_path="top_5_results.csv", regression=False):
     results = []
-
-    for _ in range(n_iters):
+    
+    for iter in range(n_iters):
         params = {
             key: random.choice(values)
             for key, values in param_distributions.items()
         }
 
         # Train and evaluate the model
+        print(f"Iteration {iter}")
         _, val_accuracy = k_fold_cross_validation_manual(X=X_train, y=y_train, hyperparams=params, k=5, seed=42, regression=regression)
 
         # Save the result
@@ -24,7 +25,7 @@ def random_search(X_train, y_train, param_distributions, n_iters, csv_path="top_
         results.append(result)
 
     # Sort by validation accuracy (descending)
-    top_results = sorted(results, key=lambda x: x["val_accuracy"], reverse=True)[:]
+    top_results = sorted(results, key=lambda x: x["val_accuracy"], reverse=True)[:5]
 
     # Save top 5 to CSV
     fieldnames = list(top_results[0].keys())

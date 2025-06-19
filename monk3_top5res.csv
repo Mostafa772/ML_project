@@ -1,0 +1,6 @@
+learning_rate,l1,l2,dropout_rate,batch_size,n_epochs,hidden_size,hidden_activation,batch_norm,weight_decay,n_h_layers,patience,CC,weights_init,output_activation,sched_decay,val_accuracy
+0.03,1e-06,0.001,0.3,1000,150,6,<class 'src.activation_functions.Activation_Tanh'>,True,0.01,3,30,False,gaussian_scaled,<src.activation_functions.Activation_Sigmoid object at 0x7f44cb0f7890>,1.4,0.948421052631579
+0.03,0.0001,0.01,0.0,1000,300,6,<class 'src.activation_functions.Activation_Sigmoid'>,True,0.01,3,30,False,he,<src.activation_functions.Activation_Sigmoid object at 0x7f44cb0f7890>,1.4,0.9184210526315789
+0.03,0.0001,0.001,0.0,1000,150,4,<class 'src.activation_functions.Activation_Sigmoid'>,True,0.01,3,50,False,random,<src.activation_functions.Activation_Sigmoid object at 0x7f44cb0f7890>,1.4,0.888421052631579
+0.007,0.0001,0.01,0.1,32,150,4,<class 'src.activation_functions.Activation_ReLU'>,True,0,3,50,False,gaussian_scaled,<src.activation_functions.Activation_Sigmoid object at 0x7f44cb0f7890>,1.4,0.8157894736842106
+0.007,0.0001,1e-05,0.3,8,300,4,<class 'src.activation_functions.Activation_ReLU'>,False,0.02,2,30,False,gaussian,<src.activation_functions.Activation_Sigmoid object at 0x7f44cb0f7890>,1.4,0.5457894736842105
