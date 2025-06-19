@@ -3,3 +3,12 @@ venv
 *.png
 *.bin
 *.mypy*
+/data
+data
+results
+/results/
+vscode
+/vscode/
+.venv/
+.venv
+venv

@@ -176,4 +176,3 @@ class Train:
                         label1="Training scores", label2="Validation scores",
                         title="score Over Epochs")
     
-    
